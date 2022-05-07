@@ -1,0 +1,64 @@
+\typeout{Rene Hampölz, 2022}
+
+\newcommand\auxDir{./tmp}               % auxiliary directory (must be identical to the definition in the .latexmkrc file)
+
+\usepackage[utf8]{inputenc}             % UTF8 encode
+\usepackage[T1]{fontenc}                % accented characters
+\usepackage{lmodern}                    % text & mathematics fonts / additional characters
+
+\usepackage[german]{babel}				% german language
+% \usepackage[english]{babel}				% english language
+\usepackage{amsmath}                    % mathematical symbols
+\usepackage{amssymb}                    % mathematical symbols
+\usepackage{amsfonts}                   % mathematical symbols
+
+\usepackage{hyperref}                   % produce hypertext links
+\usepackage{parskip}                    % customize paragraph indent
+% \usepackage{geometry}                   % modify document dimensions
+% \usepackage{booktabs}                   % enhance table quality
+% \usepackage{multicol}                   % improve two-column mode
+% \usepackage{multirow}                   % add two-column mode
+% \usepackage{enumitem}                   % change style of orderd lists
+% \usepackage[                            % ┝ easier and more flexible bibliography management
+%  backend=biber,                         % |
+%  style=iso-numeric,                     % | or iso-authoryear
+% ]{biblatex}                             % |
+% \usepackage{csquotes}                   % quoted texts are typeset according to the rules of the document language
+% \addbibresource{references.bib}
+
+% \usepackage{wrapfig}                    % create figures with floating text around
+% \usepackage{soul}                       % more text style options
+
+% \usepackage{subcaption}                 % subfigures and subtables
+% \captionsetup{compatibility=false}
+
+\usepackage{tocvsec2}                   % table of contents control
+% -------------------------
+% -1 = \part
+%  0 = \chapter
+%  1 = \section
+%  2 = \subsection
+%  3 = \subsubsection
+%  4 = \paragraph
+%  5 = \subparagraph
+% -------------------------
+
+% \usepackage[most]{tcolorbox}    	      % coloured and framed text boxes with a heading line
+% \newtcolorbox{restOfPage}[1][]{         % create a new box with its height set to the rest of the available vertical space of the current page
+    % enhanced,
+    % frame hidden,
+    % colback=white,
+    % height fill,
+    % space to=\restSpace,
+    % #1
+% }
+
+% \PassOptionsToPackage{outputdir=\auxDir}{minted}\usepackage{minted} % code highlighting
+
+% \PassOptionsToPackage{smartEllipses}{markdown}                      % enable LaTeX ellipses
+% \PassOptionsToPackage{hashEnumerators}{markdown}                    % enable additional list declarations
+% \PassOptionsToPackage{pipeTables,tableCaptions}{markdown}           % enable tables
+% \PassOptionsToPackage{fencedCode}{markdown}                         % enable inline code-blocks
+% \PassOptionsToPackage{inlineFootnotes}{markdown}                    % enable inline footnotes
+% \PassOptionsToPackage{hybrid}{markdown} 	                          % enable LaTeX in markdown
+% \usepackage{markdown}\def\markdownOptionOutputDir{\auxDir}          % markdown language support
