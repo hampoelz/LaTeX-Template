@@ -17,6 +17,20 @@
                 "close": true,
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Update Template",
+            "type": "shell",
+            "command": "./scripts/update.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            },
+            "problemMatcher": []
         }
     ]
 }
