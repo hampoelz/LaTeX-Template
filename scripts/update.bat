@@ -13,6 +13,9 @@ set "commit_descr=Merged from %remote%/tree/%remote_branch%"
 :: file storing the commit SHA from the last commit picked from template
 set tplver_file=.tplver
 
+:: commits ignored by cherry-pick (seperate with space)
+set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
+
 if [%1] == [] goto:start else (
     if [%1] == [/?]     call:show_usage
     if [%1] == [/help]  call:show_usage
@@ -110,8 +113,14 @@ if "%lastpick%"=="" set lastpick=%branch%
 set commits=
 for /f "delims=" %%i in ('git cherry %lastpick% template/%remote_branch% ^| findstr /i "+"') do (
     set "commit=%%i"
-    set "commits=!commits! !commit:~2!"
-    >%tplver_file% echo !commit:~2! 
+
+    :: check if commits is not in ignore list
+    echo.%ignore_SHAs%|findstr /C:"!commit:~2!" >nul 2>&1
+    if errorlevel 1 (
+        :: add commit to cherry-pick list and to tplver file for next update
+        set "commits=!commits! !commit:~2!"
+        >%tplver_file% echo !commit:~2! 
+    )
 )
 
 :: cleanup when no new commits found
@@ -138,8 +147,6 @@ call git checkout %branch%
 call git merge --squash %update_branch%
 set /p lastpick=< %tplver_file%
 call git commit -m "%commit_msg%" -m "%commit_descr%" -m "Bump to commit %lastpick%"
-
-
 
 echo.
 echo ========================================================
