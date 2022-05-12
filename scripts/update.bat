@@ -16,6 +16,8 @@ set tplver_file=.tplver
 :: commits ignored by cherry-pick (seperate with space)
 set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
 
+call:check_git
+
 if [%1] == [] goto:start else (
     if [%1] == [/?]     call:show_usage
     if [%1] == [/help]  call:show_usage
@@ -28,6 +30,17 @@ exit
 echo usage: update.bat ^[--help^]
 echo                   ^(--abort^)
 exit
+
+:check_git
+call git rev-parse --is-inside-work-tree >nul 2>&1 || (
+    echo.
+    echo ========================================================
+    echo      This script can only be used inside a git repo
+    echo ========================================================
+    echo.
+    exit
+)
+exit /b
 
 :check_unmerged
 call git update-index --refresh
