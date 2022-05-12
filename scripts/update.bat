@@ -98,7 +98,10 @@ exit
 :: if update branch not exists, start update else continue cherry-pick and merge
 call:check_branch :start_update
 
-call git -c core.editor=true cherry-pick --continue > nul 2>&1
+:: skip empty picks and continue with cherry-pick 
+set pick_sequencer=continue
+call git diff --cached --quiet --exit-code && set pick_sequencer=skip
+call git -c core.editor=true cherry-pick --%pick_sequencer% >nul 2>&1
 call:check_unmerged
 goto:start_merge
 
@@ -148,7 +151,7 @@ if "%commits%"=="" (
 set commits=%commits:~1%
 
 :: cherry-pick new commits from template
-call git cherry-pick -x %commits% > nul 2>&1
+call git cherry-pick --keep-redundant-commits -x %commits% > nul 2>&1
 call :check_unmerged
 
 endlocal
