@@ -1,7 +1,5 @@
 @echo off
 
-set branch=main
-
 set remote=https://github.com/hampoelz/LaTeX-Template
 set remote_branch=main
 
@@ -13,8 +11,13 @@ set "commit_descr=Merged from %remote%/tree/%remote_branch%"
 :: file storing the commit SHAs picked from template
 set tplver_file=.git\tplver
 
+:: file storing the current (not update) branch
+set currbr_file=.git\currbr
+
 :: commits ignored by cherry-pick (seperate with space)
 set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
+
+set /p branch=< %currbr_file%
 
 call:check_git
 
@@ -107,6 +110,10 @@ goto:start_merge
 call:check_merge
 call:check_untracked
 
+:: get current branch
+call git branch --show-current > %currbr_file%
+set /p branch=< %currbr_file%
+
 echo -- create update branch --
 call git checkout -b %update_branch%
 
@@ -175,6 +182,7 @@ echo.
 :cleanup
 echo -------- cleanup ---------
 if exist %tplver_file% del %tplver_file%
+if exist %currbr_file% del %currbr_file%
 call git checkout %branch%
 call git branch -D %update_branch%
 call git remote remove template
