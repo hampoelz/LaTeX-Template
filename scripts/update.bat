@@ -69,9 +69,7 @@ call git diff-index --quiet HEAD -- || (
 exit /b
 
 :check_merge
-:: check if a merge or cherry-pick is in process
-call git merge HEAD > nul 2>&1
-if errorlevel 1 (
+call git merge HEAD >nul 2>&1 || (
     echo.
     echo ========================================================
     echo    Sorry, another git workflow is already in progress
@@ -82,9 +80,8 @@ if errorlevel 1 (
 exit /b
 
 :check_branch
-:: check if update-branch exists and goto parameter else go ahead
-call git rev-parse --verify %update_branch% > nul 2>&1
-if errorlevel 1 goto %~1
+:: check if update-branch exists and go ahead else goto parameter
+call git rev-parse --verify %update_branch% >nul 2>&1 || goto %~1
 exit /b
 
 :abort
@@ -114,9 +111,8 @@ echo -- create update branch --
 call git checkout -b %update_branch%
 
 :: add template repo if not already added
-call git ls-remote --exit-code template > nul 2>&1 || call git remote add template %remote%
+call git ls-remote --exit-code template >nul 2>&1 || call git remote add template %remote%
 call git fetch --quiet template
-
 
 echo ----- check updates ------
 setlocal enabledelayedexpansion
@@ -155,7 +151,7 @@ set commits=%commits:~1%
 >%tplver_file% echo %commits%
 
 :: cherry-pick new commits from template
-call git cherry-pick --keep-redundant-commits -x %commits% > nul 2>&1
+call git cherry-pick --keep-redundant-commits -x %commits% >nul 2>&1
 call :check_unmerged
 
 endlocal
