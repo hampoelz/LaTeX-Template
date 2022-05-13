@@ -10,8 +10,8 @@ set update_branch=tmp/template
 set "commit_msg=chore: :twisted_rightwards_arrows: Merge changes from template"
 set "commit_descr=Merged from %remote%/tree/%remote_branch%"
 
-:: file storing the commit SHA from the last commit picked from template
-set tplver_file=.tplver
+:: file storing the commit SHAs picked from template
+set tplver_file=.git\tplver
 
 :: commits ignored by cherry-pick (seperate with space)
 set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
@@ -125,17 +125,18 @@ set lastpick=
 if exist %tplver_file% set /p lastpick=< %tplver_file%
 if "%lastpick%"=="" set lastpick=%branch%
 
-:: get non-equivalent commits since last update
+:: get non-equivalent commits
 set commits=
-for /f "delims=" %%i in ('git cherry %lastpick% template/%remote_branch% ^| findstr /i "+"') do (
+for /f "delims=" %%i in ('git cherry %branch% template/%remote_branch% ^| findstr /i "+"') do (
     set "commit=%%i"
 
-    :: check if commits is not in ignore list
-    echo.%ignore_SHAs%|findstr /C:"!commit:~2!" >nul 2>&1
-    if errorlevel 1 (
-        :: add commit to cherry-pick list and to tplver file for next update
-        set "commits=!commits! !commit:~2!"
-        >%tplver_file% echo !commit:~2! 
+    :: check if commit is not in ignore list
+    echo %ignore_SHAs% | findstr /C:"!commit:~2!" >nul 2>&1 || (
+        :: check if commit is not already picked
+        call git log --exit-code --grep "!commit:~2!" >nul 2>&1 && (
+            :: add commit to cherry-pick list
+            set "commits=!commits! !commit:~2!"
+        )   
     )
 )
 
@@ -150,6 +151,9 @@ if "%commits%"=="" (
 )
 set commits=%commits:~1%
 
+:: add commits to tplver file for commit message to prevent double picking
+>%tplver_file% echo %commits%
+
 :: cherry-pick new commits from template
 call git cherry-pick --keep-redundant-commits -x %commits% > nul 2>&1
 call :check_unmerged
@@ -158,11 +162,13 @@ endlocal
 
 :start_merge
 echo ------ merge update ------
-call git add %tplver_file%
+:: read picked commit list
+set /p picked_SHAs=< %tplver_file%
+
+:: merge update and commit
 call git checkout %branch%
-call git merge --squash %update_branch%
-set /p lastpick=< %tplver_file%
-call git commit -m "%commit_msg%" -m "%commit_descr%" -m "Bump to commit %lastpick%"
+call git merge -X theirs --squash %update_branch%
+call git commit -m "%commit_msg%" -m "%commit_descr%" -m "(picked commits: %picked_SHAs%)"
 
 echo.
 echo ========================================================
@@ -172,6 +178,7 @@ echo.
 
 :cleanup
 echo -------- cleanup ---------
+if exist %tplver_file% del %tplver_file%
 call git checkout %branch%
 call git branch -D %update_branch%
 call git remote remove template
