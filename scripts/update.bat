@@ -137,7 +137,7 @@ if "%lastpick%"=="" set lastpick=%branch%
 
 :: get non-equivalent commits
 set commits=
-for /f "delims=" %%i in ('git cherry %branch% template/%remote_branch% ^| findstr /i "+"') do (
+for /f "usebackq delims=" %%i in (`"git cherry %branch% template/%remote_branch% | findstr /i +"`) do (
     set "commit=%%i"
 
     :: check if commit is not in ignore list
