@@ -1,11 +1,9 @@
 @echo off
 git clean -Xdf
 
-for /F "usebackq delims=" %%d in (`"dir /ad/b/s | sort /R"`) do (
-    echo %%d|FINDSTR /L ".git" >nul
-    IF errorlevel 1 (
-        rd "%%d"
-    )
+for /f "usebackq delims=" %%d in (`"dir /ad /s /b | sort /r"`) do (
+    echo %%d | findstr /l ".git" >nul
+    if errorlevel 1 rd "%%d"
 )
 
 exit 0
