@@ -1,5 +1,7 @@
 @echo off
 
+:: minimum required git version: v2.22.0
+
 set remote=https://github.com/hampoelz/LaTeX-Template
 set remote_branch=main
 
