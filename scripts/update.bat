@@ -22,6 +22,7 @@ set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
 set /p branch=< %currbr_file%
 
 call:check_git
+call:init_empty
 
 if [%1] == [] goto:start else (
     if [%1] == [/?]     call:show_usage
@@ -87,6 +88,10 @@ exit /b
 :check_branch
 :: check if update-branch exists and go ahead else goto parameter
 call git rev-parse --verify %update_branch% >nul 2>&1 || goto %~1
+exit /b
+
+:init_empty
+call git rev-parse --verify HEAD >nul 2>&1 || call git commit --allow-empty -m "Initial commit"
 exit /b
 
 :abort
