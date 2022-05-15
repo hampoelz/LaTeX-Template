@@ -41,8 +41,8 @@ if [%1] == [] goto:start else (
 exit
 
 :show_usage
-echo usage: update.bat ^[--help^]
-echo                   ^(--abort^)
+echo usage: update.bat ^[/? | /help^]
+echo                   ^(/abort^)
 exit
 
 :check_git
