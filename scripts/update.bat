@@ -62,7 +62,7 @@ call git diff --quiet --exit-code --name-only --diff-filter=U || (
     echo.
     echo ========================================================
     echo    Please resolve conflicts and run the task again  
-    echo     or abort the update using "update.bat /abort"
+    echo     or select the abort option when starting the task
     echo ========================================================
     echo.
     exit

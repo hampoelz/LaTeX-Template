@@ -30,7 +30,19 @@
                 "panel": "dedicated",
                 "clear": true
             },
+            "args": [
+                "/${input:abort}"
+            ],
             "problemMatcher": []
         }
+    ],
+    "inputs": [
+        {
+            "id": "abort",
+            "type": "pickString",
+            "description": "Select a task execution option:",
+            "options":[ "Run or Continue", "Abort" ],
+            "default": "Run or Continue",
+        },
     ]
 }
