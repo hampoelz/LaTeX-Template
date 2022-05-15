@@ -1,3 +1,11 @@
+::
+:: Copyright (c) 2022 Rene Hampölz
+::
+:: Use of this source code is governed by an MIT-style
+:: license that can be found in the LICENSE file under
+:: https://github.com/hampoelz/LaTeX-Template.
+::
+
 @echo off
 git clean -Xdf
 
