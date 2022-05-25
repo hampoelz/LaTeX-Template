@@ -308,3 +308,6 @@ TSWLatexianTemp*
 
 # error logs
 *.err
+
+# tmp folder
+tmp/

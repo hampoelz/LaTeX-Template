@@ -1,0 +1,108 @@
+%
+% Copyright (c) 2022 Rene Hampölz
+%
+% Use of this source code is governed by an MIT-style
+% license that can be found in the LICENSE file under
+% https://github.com/hampoelz/LaTeX-Template.
+%
+
+\typeout{Rene Hampölz, 2022}
+
+% ========================================
+%              Do not change!             
+% ========================================
+% Make configurations in the main.sty file
+
+\usepackage{xparse,graphicx,calc}                                   %
+\usepackage{environ}                                                %
+\usepackage{ltablex}                                                %
+\usepackage{ifplatform}                                             %
+
+%
+\ifwindows
+    \immediate\write18{call ./scripts/history.bat /timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits" > ./tmp/historytl.tmp}
+    \immediate\write18{call ./scripts/history.bat /table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits" > ./tmp/historytab.tmp}
+\else
+    \immediate\write18{echo History-Timeline: Your platform is not supported yet. > ./tmp/historytl.tmp}
+    \immediate\write18{echo History-Table: Your platform is not supported yet. > ./tmp/historytab.tmp}
+\fi
+
+\newcommand\IncludeHistoryTimeline{\input{./tmp/historytl.tmp}}     %
+\newcommand\IncludeHistoryTable{\input{./tmp/historytab.tmp}}       %
+
+\newlength\inlineheight                                             %
+\newlength\inlinedepth                                              %
+
+% \inlineimg{Image-Path}
+\newcommand\inlineimg[1]{%                                          % ┝
+    \settototalheight\inlineheight{Xygp}%                           % |
+    \settodepth\inlinedepth{Xygp}%                                  % |
+    \raisebox{-\inlinedepth}                                        % |
+        {\includegraphics[height=\inlineheight]{#1}}%               % |
+}                                                                   % |
+
+% \commit{NegativeSpace}{SHA}[SHA-Url]{Author}[Author-Url][Author-Image]{Message}
+\NewDocumentCommand{\commit}{mmomoom}{%                             % ┝
+    \parbox[c]{\dimexpr\textwidth-#1\relax}{                        % |
+        \vspace{7pt}                                                % | add vertical space to top of content
+        \raggedright                                                % | align text left
+        \IfNoValueTF{#3}{#2}{\href{#3}{\underline{#2}}}             % |
+        \IfNoValueTF{#6}{by}{by \inlineimg{./images/authors/#6}}    % |
+        \IfNoValueTF{#5}{#4}{\href{#5}{\underline{\smash{#4}}}}     % |
+        \vspace*{3pt}\newline                                       % |
+        \detokenize{#7}                                             % |
+        \\[7pt]                                                     % |
+    }%                                                              % |
+}                                                                   % |
+
+% \HistoryTlEntry{Date}{SHA}[SHA-Url]{Author}[Author-Url][Author-Image]{Message}
+\NewDocumentCommand{\HistoryTlEntry}{mmomoom}{%                     % ┝
+    \\[-1pt]%                                                       % |
+    \parbox[b]{7em}{\hfill{#1 $\cdots$ }}%                          % | create box with timestamp (#1 argument) and centered dots
+    \makebox[0pt][c]{$\bullet$}\vrule%                              % | create box for bullet and insert vertical line
+    \quad%                                                          % | insert some spaces
+    \commit{9em}{#2}[#3]{#4}[#5][#6]{#7}%                           % |
+    \\[-1pt]%                                                       % |
+}                                                                   % |
+
+% \begin{HistoryTimeline}[Title]
+%   \HistoryTlEntry{...}
+% \end{HistoryTimeline}
+\NewEnviron{HistoryTimeline}[1][Commit History]                     % ┝
+{                                                                   % |
+    \begin{table}[h]                                                % |
+        \textbf{#1}                                                 % |
+        \centering                                                  % |
+        \begin{minipage}[t]{\textwidth}                             % |
+            \rule{\textwidth}{1pt}%                                 % |
+            \BODY                                                   % |
+            \bigskip                                                % |
+            \rule{\textwidth}{1pt}                                  % |
+        \end{minipage}                                              % |
+    \end{table}                                                     % |
+}                                                                   % |
+
+% \HistoryTabEntry{Date}{SHA}[SHA-Url]{Author}[Author-Url][Author-Image]{Message}
+\NewDocumentCommand{\HistoryTabEntry}{mmomoom}{%                    % ┝
+    #1 & \commit{9em}{#2}[#3]{#4}[#5][#6]{#7} \\[2pt]%              % |
+}                                                                   % |
+
+% \begin{HistoryTable}[Title]
+%   \HistoryTabEntry{...}
+% \end{HistoryTable}
+\NewEnviron{HistoryTable}[1][Full Commit History]                   % ┝
+{                                                                   % |
+    \begin{center}                                                  % |
+        \textbf{#1}                                                 % |
+    \end{center}                                                    % |
+    \keepXColumns                                                   % |
+    \begin{tabularx}{\textwidth}%                                   % |
+        {>{\centering\arraybackslash}p{6em}>{\raggedright\arraybackslash}X}        % |
+        \toprule                                                    % |
+        Date & Information\\                                        % |
+        \midrule                                                    % |
+        \endhead                                                    % |
+        \BODY                                                       % |
+        \bottomrule                                                 % |
+    \end{tabularx}                                                  % |
+}                                                                   % |

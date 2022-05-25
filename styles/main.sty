@@ -8,11 +8,43 @@
 
 \typeout{Rene Hampölz, 2022}
 
-\newcommand\auxDir{./tmp}               % auxiliary directory (must be identical to the definition in the .latexmkrc file)
+% ========================================
+%              Configurations             
+% ========================================
+
+% title of the generated history timeline
+\newcommand\HistoryTimelineTitle{Commit History}
+
+% maximum commits to show in the history timeline
+\newcommand\HistoryTimelineLimit{5}
+
+% title of the generated history table
+\newcommand\HistoryTableTitle{Full Commit History}
+
+% maximum commits to show in the history table use '*' for no limit
+\newcommand\HistoryTableLimit{*}
+
+% commits ignored in generated history (seperate with space)
+% example config:
+%   \newcommand\HistoryIgnoreCommits{32d0a55 b64004a d431f06}
+\newcommand\HistoryIgnoreCommits{}
+
+% ========================================
+%              Do not change!             
+% ========================================
 
 \usepackage[utf8]{inputenc}             % UTF8 encode
 \usepackage[T1]{fontenc}                % accented characters
 \usepackage{lmodern}                    % text & mathematics fonts / additional characters
+
+\newcommand\auxDir{./tmp}               % auxiliary directory (must be identical to the definition in the .latexmkrc file)
+
+% ========================================
+%        Enable or disable packages       
+% ========================================
+
+\usepackage{booktabs}                   % enhance table quality
+\usepackage{styles/history}             % auto-generate commit history 
 
 \usepackage[german]{babel}              % german language
 % \usepackage[english]{babel}             % english language
@@ -23,7 +55,6 @@
 \usepackage{hyperref}                   % produce hypertext links
 \usepackage{parskip}                    % customize paragraph indent
 % \usepackage{geometry}                   % modify document dimensions
-% \usepackage{booktabs}                   % enhance table quality
 % \usepackage{multicol}                   % improve two-column mode
 % \usepackage{multirow}                   % add two-column mode
 % \usepackage{enumitem}                   % change style of orderd lists
@@ -41,7 +72,7 @@
 % \captionsetup{compatibility=false}
 
 \usepackage{tocvsec2}                   % table of contents control
-% -------------------------
+% -------- cheatsheet -------
 % -1 = \part
 %  0 = \chapter
 %  1 = \section
@@ -49,7 +80,7 @@
 %  3 = \subsubsection
 %  4 = \paragraph
 %  5 = \subparagraph
-% -------------------------
+% ---------------------------
 
 % \usepackage[most]{tcolorbox}            % coloured and framed text boxes with a heading line
 % \newtcolorbox{restOfPage}[1][]{         % ┝ create a new box with its height set to the rest of the available vertical space of the current page
