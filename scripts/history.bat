@@ -104,98 +104,100 @@ for /f "usebackq delims=" %%i in (`"git log %commit_limit% --pretty=format:%%as,
         for /f "usebackq delims=" %%f in (`"git log -n 1 --skip !commit_counter! --pretty=format:%%s"`) do set "commit_msg=%%f"
         for /f "usebackq delims=" %%f in (`"git log -n 1 --skip !commit_counter! --pretty=format:%%aN"`) do set "commit_author=%%f"
 
-        :: remove gitmoji-codes from commit message
-        for %%j in (%gitmojis%) do set commit_msg=!commit_msg:%%j =!
+        git log -n 1 --skip !commit_counter! --pretty=format:%%b | findstr "ignore-in-history" >nul || (
+            :: remove gitmoji-codes from commit message
+            for %%j in (%gitmojis%) do set commit_msg=!commit_msg:%%j =!
 
-        set use_cached_data=false
+            set use_cached_data=false
 
-        :: read cache file line by line
-        if exist "%cached_data_file%" (
-            for /f "tokens=*" %%j in (%cached_data_file%) do (
-                :: reset cache variables
-                set "cache_commit_sha=" & set "cache_commit_author="
-                set "cache_github_sha_url=" & set "cache_github_author_url="
-                
-                :: separate cache data to write variables
-                set /a c=0
-                for %%k in (%%j) do (
-                    if [!c!] == [0] set cache_commit_sha=%%k
-                    if [!c!] == [1] set cache_github_sha_url=%%k
-                    if [!c!] == [2] set cache_commit_author=%%k
-                    if [!c!] == [3] set cache_github_author_url=%%k
-                    set /a c+=1
-                )
+            :: read cache file line by line
+            if exist "%cached_data_file%" (
+                for /f "tokens=*" %%j in (%cached_data_file%) do (
+                    :: reset cache variables
+                    set "cache_commit_sha=" & set "cache_commit_author="
+                    set "cache_github_sha_url=" & set "cache_github_author_url="
+                    
+                    :: separate cache data to write variables
+                    set /a c=0
+                    for %%k in (%%j) do (
+                        if [!c!] == [0] set cache_commit_sha=%%k
+                        if [!c!] == [1] set cache_github_sha_url=%%k
+                        if [!c!] == [2] set cache_commit_author=%%k
+                        if [!c!] == [3] set cache_github_author_url=%%k
+                        set /a c+=1
+                    )
 
-                :: pass cache data to commit variables
-                if [!commit_sha!] == [!cache_commit_sha!] (
-                    set commit_author=!cache_commit_author!
-                    set github_sha_url=!cache_github_sha_url!
-                    set github_author_url=!cache_github_author_url!
-                    set use_cached_data=true
+                    :: pass cache data to commit variables
+                    if [!commit_sha!] == [!cache_commit_sha!] (
+                        set commit_author=!cache_commit_author!
+                        set github_sha_url=!cache_github_sha_url!
+                        set github_author_url=!cache_github_author_url!
+                        set use_cached_data=true
+                    )
                 )
             )
-        )
-        
-        :: retrieve additional data from github if repo is hosted on github and github.com is reachable
-        if not [%github_api%] == [] (
-            if not [!use_cached_data!] == [true] (
-                ping github.com -n 1 -w 1000 >nul && (
-                    :: download the jq-tool to parse json
-                    if not exist %jq_bin_path% (
-                        if not exist "%jq_bin_path%\..\" mkdir "%jq_bin_path%\..\"
-                        call curl -Ls "%jq_bin_download%" -o %jq_bin_path%
-                    )
-
-                    :: fetch & parse data from GitHub and separate to write variables
-                    set /a c=0
-                    for /f "usebackq delims=" %%j in (`"curl -s %github_api%/commits/!commit_sha! | %jq_bin_path% -r .html_url,.author.login,.author.html_url,.author.avatar_url"`) do (
-                        if not [%%j] == [null] (
-                            if [!c!] == [0] set github_sha_url=%%j
-                            if [!c!] == [1] set commit_author=%%j
-                            if [!c!] == [2] set github_author_url=%%j
-                            if [!c!] == [3] set github_author_avatar_url=%%j
-                            set /a c+=1
+            
+            :: retrieve additional data from github if repo is hosted on github and github.com is reachable
+            if not [%github_api%] == [] (
+                if not [!use_cached_data!] == [true] (
+                    ping github.com -n 1 -w 1000 >nul && (
+                        :: download the jq-tool to parse json
+                        if not exist %jq_bin_path% (
+                            if not exist "%jq_bin_path%\..\" mkdir "%jq_bin_path%\..\"
+                            call curl -Ls "%jq_bin_download%" -o %jq_bin_path%
                         )
-                    )
-                    
-                    :: check if data was successfully parsed
-                    if [!c!] == [4] (
-                        :: download author avatar
-                        if not exist "%author_avatar_dir%" mkdir "%author_avatar_dir%"
-                        if not exist "%author_avatar_dir%!commit_author!.png" (
-                            if not [!github_author_avatar_url!] == [] (
-                                set "parm_size=size=50"
-                                if "!github_author_avatar_url:?=!" == "!github_author_avatar_url!" (
-                                    set "parm_size=?!parm_size!"
-                                ) else (
-                                    set "parm_size=&!parm_size!"
-                                )
 
-                                call curl -s "!github_author_avatar_url!!parm_size!" -o "%author_avatar_dir%!commit_author!.png"
+                        :: fetch & parse data from GitHub and separate to write variables
+                        set /a c=0
+                        for /f "usebackq delims=" %%j in (`"curl -s %github_api%/commits/!commit_sha! | %jq_bin_path% -r .html_url,.author.login,.author.html_url,.author.avatar_url"`) do (
+                            if not [%%j] == [null] (
+                                if [!c!] == [0] set github_sha_url=%%j
+                                if [!c!] == [1] set commit_author=%%j
+                                if [!c!] == [2] set github_author_url=%%j
+                                if [!c!] == [3] set github_author_avatar_url=%%j
+                                set /a c+=1
                             )
                         )
+                        
+                        :: check if data was successfully parsed
+                        if [!c!] == [4] (
+                            :: download author avatar
+                            if not exist "%author_avatar_dir%" mkdir "%author_avatar_dir%"
+                            if not exist "%author_avatar_dir%!commit_author!.png" (
+                                if not [!github_author_avatar_url!] == [] (
+                                    set "parm_size=size=50"
+                                    if "!github_author_avatar_url:?=!" == "!github_author_avatar_url!" (
+                                        set "parm_size=?!parm_size!"
+                                    ) else (
+                                        set "parm_size=&!parm_size!"
+                                    )
 
-                        :: cache parsed data
-                        if not exist "%cached_data_file%\..\" mkdir "%cached_data_file%\..\"
-                        echo !commit_sha!,!github_sha_url!,!commit_author!,!github_author_url! >> "%cached_data_file%"
+                                    call curl -s "!github_author_avatar_url!!parm_size!" -o "%author_avatar_dir%!commit_author!.png"
+                                )
+                            )
+
+                            :: cache parsed data
+                            if not exist "%cached_data_file%\..\" mkdir "%cached_data_file%\..\"
+                            echo !commit_sha!,!github_sha_url!,!commit_author!,!github_author_url! >> "%cached_data_file%"
+                        )
                     )
                 )
             )
+
+            :: prepare data for LaTeX document
+            if exist "%author_avatar_dir%!commit_author!.png" set "github_author_avatar_file=[!commit_author!.png]"
+
+            if not [!commit_date!] == [] set "commit_date={!commit_date!}"
+            if not [!commit_sha!] == [] set "commit_sha={!commit_sha!}"
+            if not [!commit_msg!] == [] set "commit_msg={!commit_msg!}"
+            if not [!commit_author!] == [] set "commit_author={!commit_author!}"
+
+            if not [!github_sha_url!] == [] set "github_sha_url=[!github_sha_url!]"
+            if not [!github_author_url!] == [] set "github_author_url=[!github_author_url!]"
+
+            :: output combined data
+            echo.\%prefix_entry%!commit_date!!commit_sha!!github_sha_url!!commit_author!!github_author_url!!github_author_avatar_file!!commit_msg!
         )
-
-        :: prepare data for LaTeX document
-        if exist "%author_avatar_dir%!commit_author!.png" set "github_author_avatar_file=[!commit_author!.png]"
-
-        if not [!commit_date!] == [] set "commit_date={!commit_date!}"
-        if not [!commit_sha!] == [] set "commit_sha={!commit_sha!}"
-        if not [!commit_msg!] == [] set "commit_msg={!commit_msg!}"
-        if not [!commit_author!] == [] set "commit_author={!commit_author!}"
-
-        if not [!github_sha_url!] == [] set "github_sha_url=[!github_sha_url!]"
-        if not [!github_author_url!] == [] set "github_author_url=[!github_author_url!]"
-
-        :: output combined data
-        echo.\%prefix_entry%!commit_date!!commit_sha!!github_sha_url!!commit_author!!github_author_url!!github_author_avatar_file!!commit_msg!
     )
 
     set /a commit_counter+=1
