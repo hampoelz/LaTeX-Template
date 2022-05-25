@@ -10,24 +10,24 @@
 
 :: minimum required git version: v2.22.0
 
-set remote=https://github.com/hampoelz/LaTeX-Template
-set remote_branch=main
+set "remote=https://github.com/hampoelz/LaTeX-Template"
+set "remote_branch=main"
 
-set update_branch=tmp/template
+set "update_branch=tmp/template"
 
 set "commit_msg=chore: :twisted_rightwards_arrows: Merge changes from template"
 set "commit_descr=Merged from %remote%/tree/%remote_branch%"
 
 :: file storing the commit SHAs picked from template
-set tplver_file=.git\tplver
+set "tplver_file=.git\tplver"
 
 :: file storing the current (not update) branch
-set currbr_file=.git\currbr
+set "currbr_file=.git\currbr"
 
 :: commits ignored by cherry-pick (seperate with space)
 set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
 
-set /p branch=< %currbr_file%
+if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
 call:check_git
 call:init_empty
@@ -114,7 +114,7 @@ exit
 call:check_branch :start_update
 
 :: skip empty picks and continue with cherry-pick 
-set pick_sequencer=continue
+set "pick_sequencer=continue"
 call git diff --cached --quiet --exit-code && set pick_sequencer=skip
 call git -c core.editor=true cherry-pick --%pick_sequencer% >nul 2>&1
 call:check_unmerged
@@ -126,8 +126,8 @@ call:check_merge
 call:check_untracked
 
 :: get current branch
-call git branch --show-current > %currbr_file%
-set /p branch=< %currbr_file%
+call git branch --show-current > "%currbr_file%"
+set /p branch=< "%currbr_file%"
 
 echo -- create update branch --
 call git checkout -b %update_branch%
@@ -139,12 +139,12 @@ call git fetch --quiet template
 echo ----- check updates ------
 setlocal enabledelayedexpansion
 :: read last picked commit - if not found, use branch
-set lastpick=
-if exist %tplver_file% set /p lastpick=< %tplver_file%
+set "lastpick="
+if exist "%tplver_file%" set /p lastpick=< "%tplver_file%"
 if "%lastpick%"=="" set lastpick=%branch%
 
 :: get non-equivalent commits
-set commits=
+set "commits="
 for /f "usebackq delims=" %%i in (`"git cherry %branch% template/%remote_branch% | findstr /i +"`) do (
     set "commit=%%i"
 
@@ -170,7 +170,7 @@ if "%commits%"=="" (
 set commits=%commits:~1%
 
 :: add commits to tplver file for commit message to prevent double picking
->%tplver_file% echo %commits%
+>"%tplver_file%" echo %commits%
 
 :: cherry-pick new commits from template
 call git cherry-pick --keep-redundant-commits -x %commits% >nul 2>&1
@@ -181,7 +181,7 @@ endlocal
 :start_merge
 echo ------ merge update ------
 :: read picked commit list
-set /p picked_SHAs=< %tplver_file%
+set /p picked_SHAs=< "%tplver_file%"
 
 :: merge update and commit
 call git checkout %branch%
@@ -196,8 +196,8 @@ echo.
 
 :cleanup
 echo -------- cleanup ---------
-if exist %tplver_file% del %tplver_file%
-if exist %currbr_file% del %currbr_file%
+if exist "%tplver_file%" del "%tplver_file%"
+if exist "%currbr_file%" del "%currbr_file%"
 call git checkout %branch%
 call git branch -D %update_branch%
 call git remote remove template
