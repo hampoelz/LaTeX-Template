@@ -41,8 +41,9 @@ if [%1] == [] goto:start else (
 exit
 
 :show_usage
-echo usage: update.bat ^[/? | /help^]
-echo                   ^(/abort^)
+echo.|set /p ="usage: update.bat [/? | /help]"
+echo.
+echo.|set /p ="                  (/abort)"
 exit
 
 :check_git
@@ -127,7 +128,7 @@ call:check_untracked
 
 :: get current branch
 call git branch --show-current > "%currbr_file%"
-set /p branch=< "%currbr_file%"
+set /p branch=< "%currbr_file%
 
 echo -- create update branch --
 call git checkout -b %update_branch%
