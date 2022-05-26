@@ -8,7 +8,7 @@
 
 @echo off
 
-set "author_avatar_dir=.\images\authors\"
+set "author_avatar_dir=.\tmp\images\"
 set "cached_data_file=.\tmp\history.cache"
 
 :: maximum commits to show in the history
