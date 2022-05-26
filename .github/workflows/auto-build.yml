@@ -1,0 +1,27 @@
+name: Automated Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container: texlive/texlive:latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Build document
+      run: latexmk -g -pdf --interaction=nonstopmode
+    - name: Release artifacts
+      uses: pyTooling/Actions/releaser@r0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: |
+          out/main.pdf
+        tag: build
