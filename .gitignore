@@ -309,5 +309,8 @@ TSWLatexianTemp*
 # error logs
 *.err
 
-# tmp folder
+# temporary files
 tmp/
+
+# compiled files
+out/
