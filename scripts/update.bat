@@ -36,14 +36,19 @@ if [%1] == [] goto:start else (
     if [%1] == [/?]     call:show_usage
     if [%1] == [/help]  call:show_usage
     if [%1] == [/abort] call:abort
+    goto:start
 )
 
 exit
 
 :show_usage
-echo.|set /p ="usage: update.bat [/? | /help]"
+echo.|set /p ="usage: update.bat (/abort)"
 echo.
-echo.|set /p ="                  (/abort)"
+echo.
+echo This script updates the current repository
+echo to the state of the template repository at:
+echo %remote%
+echo Changes are cherry-picked and merged
 exit
 
 :check_git
@@ -150,7 +155,7 @@ for /f "usebackq delims=" %%i in (`"git cherry %branch% template/%remote_branch%
     set "commit=%%i"
 
     :: check if commit is not in ignore list
-    echo %ignore_SHAs% | findstr /C:"!commit:~2!" >nul 2>&1 || (
+    echo %ignore_SHAs% | findstr "!commit:~2!" >nul 2>&1 || (
         :: check if commit is not already picked
         call git log --exit-code --grep "!commit:~2!" >nul 2>&1 && (
             :: add commit to cherry-pick list

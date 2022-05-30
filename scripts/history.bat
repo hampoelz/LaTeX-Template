@@ -46,7 +46,13 @@ if [%1] == [] goto:show_usage else (
 exit
 
 :show_usage
-echo.|set /p ="usage: history.bat </timeline | /history> [title] [commit limit] [ignore SHAs]"
+echo.|set /p ="usage: history.bat </timeline | /table> [title] [commit limit] [ignore SHAs]"
+echo.
+echo.
+echo This script prints LaTeX code to
+echo display the current git history
+echo in your document.
+echo The 'history.sty'-file is required.
 exit
 
 :start
@@ -99,7 +105,7 @@ for /f "usebackq delims=" %%i in (`"git log %commit_limit% --pretty=format:%%as,
     )
 
     :: check if commit is not in ignore list
-    echo %ignore_SHAs% | findstr /C:"!commit_sha!" >nul 2>&1 || (
+    echo %ignore_SHAs% | findstr "!commit_sha!" >nul 2>&1 || (
         :: get current commit message and author (skip already handled commits)
         for /f "usebackq delims=" %%f in (`"git log -n 1 --skip !commit_counter! --pretty=format:%%s"`) do set "commit_msg=%%f"
         for /f "usebackq delims=" %%f in (`"git log -n 1 --skip !commit_counter! --pretty=format:%%aN"`) do set "commit_author=%%f"
@@ -112,7 +118,7 @@ for /f "usebackq delims=" %%i in (`"git log %commit_limit% --pretty=format:%%as,
 
             :: read cache file line by line
             if exist "%cached_data_file%" (
-                for /f "tokens=*" %%j in (%cached_data_file%) do (
+                for /f "usebackq tokens=*" %%j in ("%cached_data_file%") do (
                     :: reset cache variables
                     set "cache_commit_sha=" & set "cache_commit_author="
                     set "cache_github_sha_url=" & set "cache_github_author_url="
