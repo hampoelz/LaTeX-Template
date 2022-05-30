@@ -34,6 +34,24 @@
                 "/${input:abort}"
             ],
             "problemMatcher": []
+        },
+        {
+            "label": "Install requirements",
+            "type": "shell",
+            "command": "./scripts/install.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "clear": true
+            },
+            "args": [
+                "/installonly"
+            ],
+            "problemMatcher": []
         }
     ],
     "inputs": [
