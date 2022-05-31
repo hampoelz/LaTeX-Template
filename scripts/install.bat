@@ -73,6 +73,10 @@ echo                 installed and configured
 echo ========================================================
 echo.
 
+if not "%~n0" == "install" (
+    (goto) 2>nul & del "%~f0"
+)
+
 exit
 
 
