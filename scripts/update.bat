@@ -25,7 +25,7 @@ set "tplver_file=.git\tplver"
 set "currbr_file=.git\currbr"
 
 :: commits ignored by cherry-pick (seperate with space)
-set "ignore_SHAs=1371a4dc935efd906cfa2d7eaa6d3e43b285a3df"
+set "ignore_SHAs=1371a4d"
 
 if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
@@ -154,12 +154,14 @@ set "commits="
 for /f "usebackq delims=" %%i in (`"git cherry %branch% template/%remote_branch% | findstr /i +"`) do (
     set "commit=%%i"
 
+    for /f "usebackq delims=" %%j in (`"git rev-parse --short !commit:~2!"`) do set "commit=%%j"
+
     :: check if commit is not in ignore list
-    echo %ignore_SHAs% | findstr "!commit:~2!" >nul 2>&1 || (
+    echo %ignore_SHAs% | findstr "!commit!" >nul 2>&1 || (
         :: check if commit is not already picked
-        call git log --exit-code --grep "!commit:~2!" >nul 2>&1 && (
+        call git log --exit-code --grep "!commit!" >nul 2>&1 && (
             :: add commit to cherry-pick list
-            set "commits=!commits! !commit:~2!"
+            set "commits=!commits! !commit!"
         )   
     )
 )
