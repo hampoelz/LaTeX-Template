@@ -145,7 +145,7 @@ echo ========================================================
 echo.
 cd "%cwd_perl%"
 call .\relocation.pl.bat
-call .\update_env.pl.bat --nosystem
+call .\update_env.pl.bat
 cd "%cwd_setup%"
 exit /b
 
