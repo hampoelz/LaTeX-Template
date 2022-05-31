@@ -245,6 +245,10 @@ echo ========================================================
 echo           Initialize and update new repository
 echo ========================================================
 echo.
+if exist "%cwd_template%" (
+    echo The specified directory already exists!
+    exit
+)
 mkdir "%cwd_template%"
 cd "%cwd_template%"
 call git init
