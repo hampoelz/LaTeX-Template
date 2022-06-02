@@ -16,6 +16,8 @@ set "cwd_perl=%LocalAppData%\Programs\Perl"
 set "cwd_miktex=%LocalAppData%\Programs\MiKTeX\miktex\bin\x64"
 set "cwd_git=%LocalAppData%\Programs\Git"
 
+set "refresh_env=https://raw.githubusercontent.com/chocolatey/choco/stable/src/chocolatey.resources/redirects/RefreshEnv.cmd"
+
 set "setup_vscode_url=https://aka.ms/win32-x64-user-stable"
 set "setup_vscode=vscode-user.exe"
 
@@ -50,13 +52,19 @@ if not "%~n0" == "install" set "cwd_template=%cd%\%~n0"
 
 if not exist "%cwd_setup%" mkdir "%cwd_setup%"
 
+call:refresh_env
+
 if not exist "%cwd_vscode%\code" call:install_vscode
 call:configure_vscode
 
-call perl --help >nul 2>&1 || call:install_perl
+if not exist "%cwd_miktex%\miktex.exe" (
+    call:install_miktex
+    call:configure_miktex
+)
 
-call miktex --help >nul 2>&1 || call:install_miktex
-call latexmk --help >nul 2>&1 || call:configure_miktex
+call latexmk --help >nul 2>&1 || setx path "%path%;%cwd_miktex%\"
+
+call perl --help >nul 2>&1 || call:install_perl
 
 call git --help >nul 2>&1 || call:install_git
 call git config user.name >nul && git config user.email >nul || call:configure_git
@@ -119,6 +127,50 @@ cd "%cwd_setup%"
 exit /b
 
 
+:install_miktex
+echo.
+echo ========================================================
+echo               Download MiKTeX setup files
+echo ========================================================
+echo.
+cd "%cwd_setup%"
+call curl -L "%setup_miktex_url%" -o %setup_miktex%
+call tar -xvf "%cwd_setup%\%setup_miktex%"
+
+echo.
+echo ========================================================
+echo          Download MiKTeX essential package-set
+echo ========================================================
+echo.
+cd "%cwd_setup%"
+call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential download
+
+echo.
+echo ========================================================
+echo           Install MiKTeX essential package-set
+echo ========================================================
+echo.
+cd "%cwd_setup%"
+call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential install
+call:refresh_env
+exit /b
+
+
+:configure_miktex
+echo.
+echo ========================================================
+echo      Configure MiKTeX and install required packages
+echo ========================================================
+echo.
+cd "%cwd_miktex%"
+call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
+call .\miktex.exe packages check-update
+call .\miktex.exe packages update
+call .\miktex.exe packages install latexmk
+cd "%cwd_setup%"
+exit /b
+
+
 :install_perl
 echo.
 echo ========================================================
@@ -149,52 +201,6 @@ call .\update_env.pl.bat
 cd "%cwd_setup%"
 exit /b
 
-
-:install_miktex
-echo.
-echo ========================================================
-echo               Download MiKTeX setup files
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call curl -L "%setup_miktex_url%" -o %setup_miktex%
-call tar -xvf "%cwd_setup%\%setup_miktex%"
-
-echo.
-echo ========================================================
-echo          Download MiKTeX essential package-set
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential download
-
-echo.
-echo ========================================================
-echo           Install MiKTeX essential package-set
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential install
-set "path=%path%;%cwd_miktex%\"
-setx path "%path%"
-exit /b
-
-
-:configure_miktex
-echo.
-echo ========================================================
-echo      Configure MiKTeX and install required packages
-echo ========================================================
-echo.
-cd "%cwd_miktex%"
-call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
-call .\miktex.exe packages check-update
-call .\miktex.exe packages update
-call .\miktex.exe packages install latexmk
-cd "%cwd_setup%"
-exit /b
-
-
 :install_git
 echo.
 echo ========================================================
@@ -204,8 +210,8 @@ echo.
 cd "%cwd_setup%"
 call curl -L "%setup_git_url%" -o %setup_git%
 call .\%setup_git% -o"%cwd_git%" -y
-set "path=%path%;%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
-setx path "%path%"
+setx path "%path%;%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
+call:refresh_env
 exit /b
 
 :configure_git
@@ -225,6 +231,7 @@ set /p name="Name:  "
 
 echo.
 choice /c YN /m "Are the details you entered correct?"
+echo.
 if %errorlevel% equ 2 goto:configure_git
 
 call git config --global user.email "%mail%"
@@ -238,7 +245,7 @@ echo     Download update script from template repository
 echo ========================================================
 echo.
 cd "%cwd_setup%"
-curl -L %setup_template_url% -o %setup_template%
+call curl -L %setup_template_url% -o %setup_template%
 
 echo.
 echo ========================================================
@@ -254,4 +261,13 @@ cd "%cwd_template%"
 call git init
 call cmd /k "%cwd_setup%\%setup_template%"
 cd "%cwd_setup%"
+exit /b
+
+
+:refresh_env
+echo -------- refresh env ---------
+cd "%cwd_setup%"
+if not exist RefreshEnv.cmd call curl -L %refresh_env% -o RefreshEnv.cmd
+call .\RefreshEnv.cmd
+echo ------------------------------ 
 exit /b
