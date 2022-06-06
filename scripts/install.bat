@@ -52,22 +52,27 @@ if not "%~n0" == "install" set "cwd_template=%cd%\%~n0"
 
 if not exist "%cwd_setup%" mkdir "%cwd_setup%"
 
-call:refresh_env
-
 if not exist "%cwd_vscode%\code" call:install_vscode
 call:configure_vscode
 
-if not exist "%cwd_miktex%\miktex.exe" (
-    call:install_miktex
-    call:configure_miktex
-)
+if not exist "%cwd_miktex%\miktex.exe" call:install_miktex
+call:configure_miktex
 
-call latexmk --help >nul 2>&1 || setx path "%path%;%cwd_miktex%\"
+call:refresh_env
+
+call miktex --help >nul 2>&1 || call:add_env "%cwd_miktex%"
 
 call perl --help >nul 2>&1 || call:install_perl
 
-call git --help >nul 2>&1 || call:install_git
+call git --help >nul 2>&1 || (
+    call:install_git
+    call:add_env "%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
+)
 call git config user.name >nul && git config user.email >nul || call:configure_git
+
+:: Brodcast WM_SETTINGCHANGE to propagate the change to the environment variable list
+::   Credits to https://github.com/ObjectivityLtd/PSCI/blob/master/PSCI/Public/utils/Update-EnvironmentVariables.ps1
+powershell -command "&{Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition '[DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);' ; [win32.nativemethods]::SendMessageTimeout([intptr]0xffff, 0x1a, [uintptr]::Zero, \"Environment\", 2, 5000, [ref][uintptr]::zero)}"
 
 if not "%1" == "/installonly" (
     call:setup_template
@@ -152,21 +157,32 @@ echo ========================================================
 echo.
 cd "%cwd_setup%"
 call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential install
-call:refresh_env
 exit /b
 
 
 :configure_miktex
-echo.
-echo ========================================================
-echo      Configure MiKTeX and install required packages
-echo ========================================================
-echo.
 cd "%cwd_miktex%"
-call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
-call .\miktex.exe packages check-update
-call .\miktex.exe packages update
-call .\miktex.exe packages install latexmk
+
+setlocal
+
+set "skip_config="
+for /f "usebackq delims=" %%i in (`".\miktex.exe packages info latexmk"`) do (
+    echo %%i | findstr "isInstalled" | findstr "true" >nul 2>&1 && set "skip_config=t"
+)
+
+if not "%skip_config%" == "t" (
+    echo.
+    echo ========================================================
+    echo      Configure MiKTeX and install required packages
+    echo ========================================================
+    echo.
+
+    call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
+    call .\miktex.exe packages check-update
+    call .\miktex.exe packages update
+    call .\miktex.exe packages install latexmk
+)
+endlocal
 cd "%cwd_setup%"
 exit /b
 
@@ -197,7 +213,7 @@ echo ========================================================
 echo.
 cd "%cwd_perl%"
 call .\relocation.pl.bat
-call .\update_env.pl.bat
+call .\update_env.pl.bat --nosystem
 cd "%cwd_setup%"
 exit /b
 
@@ -210,8 +226,6 @@ echo.
 cd "%cwd_setup%"
 call curl -L "%setup_git_url%" -o %setup_git%
 call .\%setup_git% -o"%cwd_git%" -y
-setx path "%path%;%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
-call:refresh_env
 exit /b
 
 :configure_git
@@ -263,11 +277,19 @@ call cmd /k "%cwd_setup%\%setup_template%"
 cd "%cwd_setup%"
 exit /b
 
+:add_env
+set user_path=
+for /f "usebackq skip=2 tokens=1-2*" %%a in (`"%WinDir%\System32\Reg query HKCU\Environment /v Path 2>&1"`) do set user_path=%%c
+call "%WinDir%\System32\Reg" add "HKCU\Environment" /f /v Path /d "%user_path%;%~1"
+set "path=%path%;%~1"
+exit /b
 
 :refresh_env
-echo -------- refresh env ---------
+echo.
+echo ------------------------------
 cd "%cwd_setup%"
-if not exist RefreshEnv.cmd call curl -L %refresh_env% -o RefreshEnv.cmd
+if not exist RefreshEnv.cmd call curl -sL %refresh_env% -o RefreshEnv.cmd
 call .\RefreshEnv.cmd
-echo ------------------------------ 
+echo ------------------------------
+echo.
 exit /b
