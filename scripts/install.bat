@@ -86,6 +86,8 @@ echo                 installed and configured
 echo ========================================================
 echo.
 
+cd "%cwd_template%"
+
 if not "%~n0" == "install" (
     (goto) 2>nul & del "%~f0"
 )
