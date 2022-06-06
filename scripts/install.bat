@@ -40,6 +40,23 @@ echo       software to use the latex template repository
 echo.
 echo     The following software will be installed:
 echo       vs-code, strawberry-perl, miktex, git
+echo.
+echo     The following vs-code addons will be installed:
+echo       code-spell-checker, code-spell-checker-german,
+echo       latex-workshop, latex-utilities
+echo.
+echo     The following miktex configurations will be made:
+echo       enable auto package install, install latexmk
+echo.
+echo.
+echo           - Copyright (c) 2022 Rene Hampoelz -         
+echo    --------------------------------------------------   
+echo      By using this script you accept this project's
+echo      MIT license found in the LICENSE file under
+echo      https://github.com/hampoelz/LaTeX-Template
+echo      and the licenses of the software that will
+echo      be installed by this script.
+echo    --------------------------------------------------   
 echo ========================================================
 echo.
 
