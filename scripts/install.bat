@@ -259,8 +259,34 @@ echo.
 echo Please enter your details below
 echo.
 
-set /p mail="Email: "
-set /p name="Name:  "
+set /p mail="Email: %mail%" || set "mail=%mail%" 
+set /p name="Name:  %name%" || set "name=%name%" 
+echo.
+
+if not defined mail (
+    echo --------------------------------------------
+    echo  Please enter your e-mail address.
+    echo.
+    echo  This is important because every Git commit
+    echo  uses this information, and it's immutably
+    echo  baked into the commits you start creating.
+    echo --------------------------------------------
+    echo.
+    pause
+    goto:configure_git
+)
+if not defined name (
+    echo --------------------------------------------
+    echo  Please enter your name.
+    echo.
+    echo  This is important because every Git commit
+    echo  uses this information, and it's immutably
+    echo  baked into the commits you start creating.
+    echo --------------------------------------------
+    echo.
+    pause
+    goto:configure_git
+)
 
 echo.
 choice /c YN /m "Are the details you entered correct?"
