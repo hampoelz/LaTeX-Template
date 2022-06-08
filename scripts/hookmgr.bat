@@ -20,54 +20,54 @@ if [%1] == [] call:show_usage else (
 exit
 
 :show_usage
-echo.|set /p ="usage: hookmgr.bat <add | del> <githook> <shell command>"
-echo.
-echo.
-echo Desc
-exit
+    echo.|set /p ="usage: hookmgr.bat <add | del> <githook> <shell command>"
+    echo.
+    echo.
+    echo Desc
+    exit
 
 :start
-setlocal enabledelayedexpansion
+    setlocal enabledelayedexpansion
 
-set action=%1
-set hook_name=%2
-set command=%3
+    set action=%1
+    set hook_name=%2
+    set command=%3
 
-echo %hooks% | findstr "%hook_name%" >nul 2>&1 || (
-    echo hookmgr.bat: Specified hook does not exist
-    exit
-)
+    echo %hooks% | findstr "%hook_name%" >nul 2>&1 || (
+        echo hookmgr.bat: Specified hook does not exist
+        exit
+    )
 
-if [%command:~0,1%%command:~-1%] == [""] set command=!command:~1,-1!
+    if [%command:~0,1%%command:~-1%] == [""] set command=!command:~1,-1!
 
-set "hook_path=.\.git\hooks\%hook_name%"
-set "hook_command=nohup /bin/sh '%command%' >/dev/null 2>&1 &"
+    set "hook_path=.\.git\hooks\%hook_name%"
+    set "hook_command=nohup /bin/sh '%command%' >/dev/null 2>&1 &"
 
-if not exist "%hook_path%" (
-    if [%action%] == [del] exit
-    echo #^^!/bin/sh >> "%hook_path%"
-    echo. >> "%hook_path%"
-)
-
-if [%action%] == [add] (
-    type "%hook_path%" | findstr /x /l /c:"%hook_command% " >nul && (
-        echo hookmgr.bat: Your command already exists in the %hook_name% hook
-    ) || (
-        echo.|set /p ="%hook_command%" >> "%hook_path%"
+    if not exist "%hook_path%" (
+        if [%action%] == [del] exit
+        echo #^^!/bin/sh >> "%hook_path%"
         echo. >> "%hook_path%"
-        echo hookmgr.bat: Your command has been added to the %hook_name% hook
     )
 
-)
+    if [%action%] == [add] (
+        type "%hook_path%" | findstr /x /l /c:"%hook_command% " >nul && (
+            echo hookmgr.bat: Your command already exists in the %hook_name% hook
+        ) || (
+            echo.|set /p ="%hook_command%" >> "%hook_path%"
+            echo. >> "%hook_path%"
+            echo hookmgr.bat: Your command has been added to the %hook_name% hook
+        )
 
-if [%action%] == [del] (
-    type "%hook_path%" | findstr /x /v /l /c:"%hook_command% " > "%hook_path%.tmp"
-
-    comp /m "%hook_path%" "%hook_path%.tmp" >nul && (
-        del /q "%hook_path%.tmp"
-        echo hookmgr.bat: Your command has already been removed from the %hook_name% hook
-    ) || (
-        move /y "%hook_path%.tmp" "%hook_path%" >nul
-        echo hookmgr.bat: Your command has been removed from the %hook_name% hook
     )
-)
+
+    if [%action%] == [del] (
+        type "%hook_path%" | findstr /x /v /l /c:"%hook_command% " > "%hook_path%.tmp"
+
+        comp /m "%hook_path%" "%hook_path%.tmp" >nul && (
+            del /q "%hook_path%.tmp"
+            echo hookmgr.bat: Your command has already been removed from the %hook_name% hook
+        ) || (
+            move /y "%hook_path%.tmp" "%hook_path%" >nul
+            echo hookmgr.bat: Your command has been removed from the %hook_name% hook
+        )
+    )

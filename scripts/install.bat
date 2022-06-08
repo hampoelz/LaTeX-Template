@@ -113,228 +113,228 @@ exit
 
 
 :install_vscode
-echo.
-echo ========================================================
-echo     Download and install Microsoft Visual Studio Code
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call curl -L "%setup_vscode_url%" -o %setup_vscode%
-call .\%setup_vscode% /VERYSILENT /CURRENTUSER /NORESTART /MERGETASKS=addtopath,!runcode /LOG="%cwd_setup%\%setup_vscode%.log"
-exit /b
+    echo.
+    echo ========================================================
+    echo     Download and install Microsoft Visual Studio Code
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call curl -L "%setup_vscode_url%" -o %setup_vscode%
+    call .\%setup_vscode% /VERYSILENT /CURRENTUSER /NORESTART /MERGETASKS=addtopath,!runcode /LOG="%cwd_setup%\%setup_vscode%.log"
+    goto:EOF
 
 
 :configure_vscode
-cd "%cwd_vscode%"
+    cd "%cwd_vscode%"
 
-setlocal enabledelayedexpansion
+    setlocal enabledelayedexpansion
 
-set "installed_exts="
-for /f "usebackq delims=" %%i in (`".\code --list-extensions"`) do (
-    set "installed_exts=!installed_exts! %%i"
-)
+    set "installed_exts="
+    for /f "usebackq delims=" %%i in (`".\code --list-extensions"`) do (
+        set "installed_exts=!installed_exts! %%i"
+    )
 
-echo %installed_exts% | findstr "James-Yu.latex-workshop" | findstr "tecosaur.latex-utilities" | findstr "streetsidesoftware.code-spell-checker" | findstr "streetsidesoftware.code-spell-checker-german" >nul 2>&1 || (
-    echo.
-    echo ========================================================
-    echo    Install required and recommended VSCode extensions
-    echo ========================================================
-    echo.
+    echo %installed_exts% | findstr "James-Yu.latex-workshop" | findstr "tecosaur.latex-utilities" | findstr "streetsidesoftware.code-spell-checker" | findstr "streetsidesoftware.code-spell-checker-german" >nul 2>&1 || (
+        echo.
+        echo ========================================================
+        echo    Install required and recommended VSCode extensions
+        echo ========================================================
+        echo.
 
-    call .\code --install-extension James-Yu.latex-workshop
-    call .\code --install-extension tecosaur.latex-utilities
-    call .\code --install-extension streetsidesoftware.code-spell-checker
-    call .\code --install-extension streetsidesoftware.code-spell-checker-german
-)
-endlocal
-cd "%cwd_setup%"
-exit /b
+        call .\code --install-extension James-Yu.latex-workshop
+        call .\code --install-extension tecosaur.latex-utilities
+        call .\code --install-extension streetsidesoftware.code-spell-checker
+        call .\code --install-extension streetsidesoftware.code-spell-checker-german
+    )
+    endlocal
+    cd "%cwd_setup%"
+    goto:EOF
 
 
 :install_miktex
-echo.
-echo ========================================================
-echo               Download MiKTeX setup files
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call curl -L "%setup_miktex_url%" -o %setup_miktex%
-call tar -xvf "%cwd_setup%\%setup_miktex%"
+    echo.
+    echo ========================================================
+    echo               Download MiKTeX setup files
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call curl -L "%setup_miktex_url%" -o %setup_miktex%
+    call tar -xvf "%cwd_setup%\%setup_miktex%"
 
-echo.
-echo ========================================================
-echo          Download MiKTeX essential package-set
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential download
+    echo.
+    echo ========================================================
+    echo          Download MiKTeX essential package-set
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential download
 
-echo.
-echo ========================================================
-echo           Install MiKTeX essential package-set
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential install
-exit /b
+    echo.
+    echo ========================================================
+    echo           Install MiKTeX essential package-set
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call .\miktexsetup_standalone.exe --verbose --shared=no --package-set=essential install
+    goto:EOF
 
 
 :configure_miktex
-cd "%cwd_miktex%"
+    cd "%cwd_miktex%"
 
-setlocal
+    setlocal
 
-set "skip_config="
-for /f "usebackq delims=" %%i in (`".\miktex.exe packages info latexmk"`) do (
-    echo %%i | findstr "isInstalled" | findstr "true" >nul 2>&1 && set "skip_config=t"
-)
+    set "skip_config="
+    for /f "usebackq delims=" %%i in (`".\miktex.exe packages info latexmk"`) do (
+        echo %%i | findstr "isInstalled" | findstr "true" >nul 2>&1 && set "skip_config=t"
+    )
 
-if not "%skip_config%" == "t" (
-    echo.
-    echo ========================================================
-    echo      Configure MiKTeX and install required packages
-    echo ========================================================
-    echo.
+    if not "%skip_config%" == "t" (
+        echo.
+        echo ========================================================
+        echo      Configure MiKTeX and install required packages
+        echo ========================================================
+        echo.
 
-    call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
-    call .\miktex.exe packages check-update
-    call .\miktex.exe packages update
-    call .\miktex.exe packages install latexmk
-)
-endlocal
-cd "%cwd_setup%"
-exit /b
+        call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
+        call .\miktex.exe packages check-update
+        call .\miktex.exe packages update
+        call .\miktex.exe packages install latexmk
+    )
+    endlocal
+    cd "%cwd_setup%"
+    goto:EOF
 
 
 :install_perl
-echo.
-echo ========================================================
-echo      Download Strawberry Perl binaries and scripts
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call curl -L "%setup_perl_url%" -o %setup_perl%
+    echo.
+    echo ========================================================
+    echo      Download Strawberry Perl binaries and scripts
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call curl -L "%setup_perl_url%" -o %setup_perl%
 
-echo.
-echo ========================================================
-echo       Unpack Strawberry Perl binaries and scripts
-echo ========================================================
-echo.
-mkdir "%cwd_perl%"
-cd "%cwd_perl%"
-call tar -xvf "%cwd_setup%\%setup_perl%"
-cd "%cwd_setup%"
+    echo.
+    echo ========================================================
+    echo       Unpack Strawberry Perl binaries and scripts
+    echo ========================================================
+    echo.
+    mkdir "%cwd_perl%"
+    cd "%cwd_perl%"
+    call tar -xvf "%cwd_setup%\%setup_perl%"
+    cd "%cwd_setup%"
 
-echo.
-echo ========================================================
-echo         Run Strawberry Perl post-install scripts
-echo ========================================================
-echo.
-cd "%cwd_perl%"
-call .\relocation.pl.bat
-call .\update_env.pl.bat --nosystem
-cd "%cwd_setup%"
-exit /b
+    echo.
+    echo ========================================================
+    echo         Run Strawberry Perl post-install scripts
+    echo ========================================================
+    echo.
+    cd "%cwd_perl%"
+    call .\relocation.pl.bat
+    call .\update_env.pl.bat --nosystem
+    cd "%cwd_setup%"
+    goto:EOF
 
 :install_git
-echo.
-echo ========================================================
-echo                 Download and install Git
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call curl -L "%setup_git_url%" -o %setup_git%
-call .\%setup_git% -o"%cwd_git%" -y
-exit /b
+    echo.
+    echo ========================================================
+    echo                 Download and install Git
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call curl -L "%setup_git_url%" -o %setup_git%
+    call .\%setup_git% -o"%cwd_git%" -y
+    goto:EOF
 
 :configure_git
-cls
-echo.
-echo ========================================================
-echo            Configure Git - email and username
-echo ========================================================
-echo.
-
-echo.
-echo Please enter your details below
-echo.
-
-set /p mail="Email: %mail%" || set "mail=%mail%" 
-set /p name="Name:  %name%" || set "name=%name%" 
-echo.
-
-if not defined mail (
-    echo --------------------------------------------
-    echo  Please enter your e-mail address.
+    cls
     echo.
-    echo  This is important because every Git commit
-    echo  uses this information, and it's immutably
-    echo  baked into the commits you start creating.
-    echo --------------------------------------------
+    echo ========================================================
+    echo            Configure Git - email and username
+    echo ========================================================
     echo.
-    pause
-    goto:configure_git
-)
-if not defined name (
-    echo --------------------------------------------
-    echo  Please enter your name.
-    echo.
-    echo  This is important because every Git commit
-    echo  uses this information, and it's immutably
-    echo  baked into the commits you start creating.
-    echo --------------------------------------------
-    echo.
-    pause
-    goto:configure_git
-)
 
-echo.
-choice /c YN /m "Are the details you entered correct?"
-echo.
-if %errorlevel% equ 2 goto:configure_git
+    echo.
+    echo Please enter your details below
+    echo.
 
-call git config --global user.email "%mail%"
-call git config --global user.name "%name%"
-exit /b
+    set /p mail="Email: %mail%" || set "mail=%mail%" 
+    set /p name="Name:  %name%" || set "name=%name%" 
+    echo.
+
+    if not defined mail (
+        echo --------------------------------------------
+        echo  Please enter your e-mail address.
+        echo.
+        echo  This is important because every Git commit
+        echo  uses this information, and it's immutably
+        echo  baked into the commits you start creating.
+        echo --------------------------------------------
+        echo.
+        pause
+        goto:configure_git
+    )
+    if not defined name (
+        echo --------------------------------------------
+        echo  Please enter your name.
+        echo.
+        echo  This is important because every Git commit
+        echo  uses this information, and it's immutably
+        echo  baked into the commits you start creating.
+        echo --------------------------------------------
+        echo.
+        pause
+        goto:configure_git
+    )
+
+    echo.
+    choice /c YN /m "Are the details you entered correct?"
+    echo.
+    if %errorlevel% equ 2 goto:configure_git
+
+    call git config --global user.email "%mail%"
+    call git config --global user.name "%name%"
+    goto:EOF
 
 :setup_template
-echo.
-echo ========================================================
-echo     Download update script from template repository
-echo ========================================================
-echo.
-cd "%cwd_setup%"
-call curl -L %setup_template_url% -o %setup_template%
+    echo.
+    echo ========================================================
+    echo     Download update script from template repository
+    echo ========================================================
+    echo.
+    cd "%cwd_setup%"
+    call curl -L %setup_template_url% -o %setup_template%
 
-echo.
-echo ========================================================
-echo           Initialize and update new repository
-echo ========================================================
-echo.
-if exist "%cwd_template%" (
-    echo The specified directory already exists!
-    exit
-)
-mkdir "%cwd_template%"
-cd "%cwd_template%"
-call git init
-call cmd /k "%cwd_setup%\%setup_template%"
-cd "%cwd_setup%"
-exit /b
+    echo.
+    echo ========================================================
+    echo           Initialize and update new repository
+    echo ========================================================
+    echo.
+    if exist "%cwd_template%" (
+        echo The specified directory already exists!
+        exit
+    )
+    mkdir "%cwd_template%"
+    cd "%cwd_template%"
+    call git init
+    call cmd /k "%cwd_setup%\%setup_template%"
+    cd "%cwd_setup%"
+    goto:EOF
 
 :add_env
-set user_path=
-for /f "usebackq skip=2 tokens=1-2*" %%a in (`"%WinDir%\System32\Reg query HKCU\Environment /v Path 2>&1"`) do set user_path=%%c
-call "%WinDir%\System32\Reg" add "HKCU\Environment" /f /v Path /d "%user_path%;%~1"
-set "path=%path%;%~1"
-exit /b
+    set user_path=
+    for /f "usebackq skip=2 tokens=1-2*" %%a in (`"%WinDir%\System32\Reg query HKCU\Environment /v Path 2>&1"`) do set user_path=%%c
+    call "%WinDir%\System32\Reg" add "HKCU\Environment" /f /v Path /d "%user_path%;%~1"
+    set "path=%path%;%~1"
+    goto:EOF
 
 :refresh_env
-echo.
-echo ------------------------------
-cd "%cwd_setup%"
-if not exist RefreshEnv.cmd call curl -sL %refresh_env% -o RefreshEnv.cmd
-call .\RefreshEnv.cmd
-echo ------------------------------
-echo.
-exit /b
+    echo.
+    echo ------------------------------
+    cd "%cwd_setup%"
+    if not exist RefreshEnv.cmd call curl -sL %refresh_env% -o RefreshEnv.cmd
+    call .\RefreshEnv.cmd
+    echo ------------------------------
+    echo.
+    goto:EOF
