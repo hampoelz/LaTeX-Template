@@ -27,8 +27,13 @@ set "currbr_file=.git\currbr"
 :: commits ignored by cherry-pick (seperate with space)
 set "ignore_SHAs=1371a4d"
 
+
+set "refresh_env_path=scripts\refreshenv.bat"
+set "refresh_env_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
+
 if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
+call:refresh_env
 call:check_git
 call:init_empty
 
@@ -50,6 +55,14 @@ exit
     echo %remote%
     echo Changes are cherry-picked and merged
     exit
+
+:refresh_env
+    if not exist "%refresh_env_path%" (
+        call curl -sL "%refresh_env_url%" -o refreshenv.bat
+        call .\refreshenv.bat
+        del .\refreshenv.bat
+    ) else call "%refresh_env_path%"
+    goto:EOF
 
 :check_git
     call git rev-parse --is-inside-work-tree >nul 2>&1 || (

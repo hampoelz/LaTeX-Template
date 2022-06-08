@@ -16,7 +16,7 @@ set "cwd_perl=%LocalAppData%\Programs\Perl"
 set "cwd_miktex=%LocalAppData%\Programs\MiKTeX\miktex\bin\x64"
 set "cwd_git=%LocalAppData%\Programs\Git"
 
-set "refresh_env=https://raw.githubusercontent.com/chocolatey/choco/stable/src/chocolatey.resources/redirects/RefreshEnv.cmd"
+set "refresh_env_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
 
 set "setup_vscode_url=https://aka.ms/win32-x64-user-stable"
 set "setup_vscode=vscode-user.exe"
@@ -325,16 +325,16 @@ exit
 :add_env
     set user_path=
     for /f "usebackq skip=2 tokens=1-2*" %%a in (`"%WinDir%\System32\Reg query HKCU\Environment /v Path 2>&1"`) do set user_path=%%c
-    call "%WinDir%\System32\Reg" add "HKCU\Environment" /f /v Path /d "%user_path%;%~1"
-    set "path=%path%;%~1"
+    call "%WinDir%\System32\Reg" add "HKCU\Environment" /f /v Path /d "%~1;%user_path%"
+    set "path=%~1;%path%"
     goto:EOF
 
 :refresh_env
     echo.
     echo ------------------------------
     cd "%cwd_setup%"
-    if not exist RefreshEnv.cmd call curl -sL %refresh_env% -o RefreshEnv.cmd
-    call .\RefreshEnv.cmd
+    if not exist refreshenv.bat call curl -sL "%refresh_env_url%" -o refreshenv.bat
+    call .\refreshenv.bat
     echo ------------------------------
     echo.
     goto:EOF
