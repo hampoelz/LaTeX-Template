@@ -95,11 +95,12 @@ call git config user.name >nul && git config user.email >nul || call:configure_g
 
 :: Brodcast WM_SETTINGCHANGE to propagate the change to the environment variable list
 ::   Credits to https://github.com/ObjectivityLtd/PSCI/blob/master/PSCI/Public/utils/Update-EnvironmentVariables.ps1
-powershell -command "&{Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition '[DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);' ; [win32.nativemethods]::SendMessageTimeout([intptr]0xffff, 0x1a, [uintptr]::Zero, \"Environment\", 2, 5000, [ref][uintptr]::zero)}"
+powershell -command "&{Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition '[DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);' ; [win32.nativemethods]::SendMessageTimeout([intptr]0xffff, 0x1a, [uintptr]::Zero, \"Environment\", 2, 5000, [ref][uintptr]::zero)}" >nul
 
 if not "%1" == "/installonly" (
     call:setup_template
     start /min cmd /c call "%cwd_vscode%\code" "%cwd_template%"
+    cd "%cwd_template%"
 )
 
 echo.
@@ -108,8 +109,6 @@ echo       The required software has been successfully
 echo                 installed and configured
 echo ========================================================
 echo.
-
-cd "%cwd_template%"
 
 if not "%~n0" == "install" (
     (goto) 2>nul & del "%~f0"
