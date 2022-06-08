@@ -45,8 +45,9 @@ goto main
     call :SetFromReg "HKCU\Environment" Path Path_HKCU >> "%TEMP%\_env.cmd"
 
     :: Caution: do not insert space-chars before >> redirection sign
-    :: Modified: Load the user env path before the system path for the current session
-    echo/set "Path=%%Path_HKCU%%;%%Path_HKLM%%" >> "%TEMP%\_env.cmd"
+    :: Modified: Load the user env path before the system path for the current session, except for some windows directories to avoid security issues
+    set "Path_WINDOWS=%%SystemRoot%%;%%SystemRoot%%\system32;%%SystemRoot%%\System32\Wbem;%%SYSTEMROOT%%\System32\WindowsPowerShell\v1.0\"
+    echo/set "Path=%Path_WINDOWS%;%%Path_HKCU%%;%%Path_HKLM%%" >> "%TEMP%\_env.cmd"
 
     :: Cleanup
     del /f /q "%TEMP%\_envset.tmp" 2>nul
