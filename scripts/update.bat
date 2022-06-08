@@ -35,6 +35,7 @@ if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
 call:refresh_env
 call:check_git
+call:check_git_version
 call:init_empty
 
 if [%1] == [] goto:start else (
@@ -73,6 +74,24 @@ exit
         echo.
         exit
     )
+    goto:EOF
+
+:check_git_version:
+    set git_version=
+    for /f "usebackq tokens=3 delims= " %%i in (`"git --version"`) do set "git_version=%%i"
+    if "%git_version%" GEQ "2.22.0" goto:EOF
+    echo.
+    echo ========================================================
+    echo           Please update your Git installation,
+    echo           at least version 2.22.0 is required!
+    echo.
+    echo           Your installed version:
+    echo              %git_version%
+    echo ========================================================
+    echo.
+    choice /c YN /m "Would you like to continue anyway? The script could fail and cause issues."
+    echo.
+    if not %errorlevel% equ 1 exit
     goto:EOF
 
 :check_unmerged

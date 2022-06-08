@@ -81,9 +81,15 @@ call miktex --help >nul 2>&1 || call:add_env "%cwd_miktex%"
 
 call perl --help >nul 2>&1 || call:install_perl
 
-call git --help >nul 2>&1 || (
+set "git_path=%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
+call git --help >nul 2>&1 && (
+    for /f "usebackq tokens=3 delims= " %%i in (`"git --version"`) do if "%%i" LSS "2.22.0" (
+        call:install_git
+        call:add_env "%git_path%"
+    )
+) || (
     call:install_git
-    call:add_env "%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
+    call:add_env "%git_path%"
 )
 call git config user.name >nul && git config user.email >nul || call:configure_git
 
