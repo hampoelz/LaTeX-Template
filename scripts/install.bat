@@ -264,8 +264,8 @@ exit
     echo Please enter your details below
     echo.
 
-    set /p mail="Email: %mail%" || set "mail=%mail%" 
-    set /p name="Name:  %name%" || set "name=%name%" 
+    if not defined mail ( set /p mail="Email: %mail%" ) else echo Email: %mail%
+    if not defined name ( set /p name="Name:  %name%" ) else echo Name:  %name%
     echo.
 
     if not defined mail (
@@ -296,7 +296,11 @@ exit
     echo.
     choice /c YN /m "Are the details you entered correct?"
     echo.
-    if %errorlevel% equ 2 goto:configure_git
+    if %errorlevel% equ 2 (
+        set mail=
+        set name=
+        goto:configure_git
+    )
 
     call git config --global user.email "%mail%"
     call git config --global user.name "%name%"
