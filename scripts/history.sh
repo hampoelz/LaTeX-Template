@@ -90,34 +90,36 @@ function start()
 
                 # retrieve additional data from github if repo is hosted on github and github.com is reachable
                 if [ "$github_api" != "" ] && [ "$use_cached_data" != "true" ]; then
-                    if jq --version &> /dev/null && timeout 1 ping github.com -c 1 &> /dev/null; then
-                        # fetch & parse data from GitHub and separate to write variables
-                        github_data="$(curl -s $github_api/commits/$commit_sha | jq -r .html_url,.author.login,.author.html_url,.author.avatar_url)"
+                    if jq --version &> /dev/null; then
+                        if [ "${CI}" ] || timeout 1 ping github.com -c 1 &> /dev/null; then
+                            # fetch & parse data from GitHub and separate to write variables
+                            github_data="$(curl -s $github_api/commits/$commit_sha | jq -r .html_url,.author.login,.author.html_url,.author.avatar_url)"
 
-                        github_sha_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 1)"
-                        github_author="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 2)"
-                        github_author_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 3)"
-                        github_author_avatar_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 4)"
-                    
-                        # check if data was successfully parsed
-                        if [ "$github_author" != "" ]; then commit_author="$github_author"; fi
-                        if [ "$github_author_avatar_url" != "" ]; then
-                            # download author avatar
-                            if [ ! -e "$author_avatar_dir" ]; then mkdir "$author_avatar_dir"; fi
-                            if [ ! -e "$author_avatar_dir$commit_author.png" ] && [ "$github_author_avatar_url" != "" ]; then
-                                parm_size="size=50"
-                                if [ "${github_author_avatar_url/'?'/''}" == "$github_author_avatar_url" ]; then
-                                    parm_size="?$parm_size"
-                                else
-                                    parm_size="&$parm_size"
+                            github_sha_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 1)"
+                            github_author="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 2)"
+                            github_author_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 3)"
+                            github_author_avatar_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 4)"
+                        
+                            # check if data was successfully parsed
+                            if [ "$github_author" != "" ]; then commit_author="$github_author"; fi
+                            if [ "$github_author_avatar_url" != "" ]; then
+                                # download author avatar
+                                if [ ! -e "$author_avatar_dir" ]; then mkdir "$author_avatar_dir"; fi
+                                if [ ! -e "$author_avatar_dir$commit_author.png" ] && [ "$github_author_avatar_url" != "" ]; then
+                                    parm_size="size=50"
+                                    if [ "${github_author_avatar_url/'?'/''}" == "$github_author_avatar_url" ]; then
+                                        parm_size="?$parm_size"
+                                    else
+                                        parm_size="&$parm_size"
+                                    fi
+
+                                    curl -s "$github_author_avatar_url$parm_size" -o "$author_avatar_dir$commit_author.png"
                                 fi
 
-                                curl -s "$github_author_avatar_url$parm_size" -o "$author_avatar_dir$commit_author.png"
+                                # cache parsed data
+                                if [ ! -e "$(dirname $cached_data_file)" ]; then mkdir "$(dirname $cached_data_file)"; fi
+                                echo "$commit_sha,$github_sha_url,$commit_author,$github_author_url" >> "$cached_data_file"
                             fi
-
-                            # cache parsed data
-                            if [ ! -e "$(dirname $cached_data_file)" ]; then mkdir "$(dirname $cached_data_file)"; fi
-                            echo "$commit_sha,$github_sha_url,$commit_author,$github_author_url" >> "$cached_data_file"
                         fi
                     fi
                 fi

@@ -14,8 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     container: texlive/texlive:latest
     steps:
+    - name: Install jq
+      run: |
+        apt-get update -y
+        apt-get install -y jq
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Build document
       run: latexmk -g -pdf --interaction=nonstopmode
     - name: Release artifacts
