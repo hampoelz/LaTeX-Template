@@ -6,7 +6,10 @@
         {
             "label": "Clean",
             "type": "shell",
-            "command": "./scripts/clean.bat",
+            "command": "./scripts/clean.sh",
+            "windows": {
+                "command": "./scripts/clean.bat"
+            },
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -21,7 +24,12 @@
         {
             "label": "Update Template",
             "type": "shell",
-            "command": "./scripts/update.bat",
+            "command": "./scripts/update.sh",
+            "args": [ "--${input:abort}" ],
+            "windows":{
+                "command": "./scripts/update.bat",
+                "args": [ "/${input:abort}" ]
+            },
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -30,15 +38,16 @@
                 "panel": "dedicated",
                 "clear": true
             },
-            "args": [
-                "/${input:abort}"
-            ],
             "problemMatcher": []
         },
         {
             "label": "Install requirements",
             "type": "shell",
-            "command": "./scripts/install.bat",
+            "command": "echo Sorry your platform is not yet supported!",
+            "windows": {
+                "command": "./scripts/install.bat",
+                "args": [ "/installonly" ]
+            },
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -48,9 +57,6 @@
                 "panel": "dedicated",
                 "clear": true
             },
-            "args": [
-                "/installonly"
-            ],
             "problemMatcher": []
         }
     ],

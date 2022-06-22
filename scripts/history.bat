@@ -73,8 +73,8 @@ exit
         set ignore_SHAs=!ignore_SHAs:"=!
     )
 
-    :: set no commit limit if parameter equal '*'
-    if [%commit_limit%] == [*] set "commit_limit="
+    :: set no commit limit if parameter equal '0'
+    if [%commit_limit%] == [0] set "commit_limit="
 
     :: prepend argument got git command when commit limit is set
     if not [%commit_limit%] == [] set "commit_limit=-n !commit_limit!"
