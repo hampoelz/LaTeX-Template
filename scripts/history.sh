@@ -8,8 +8,8 @@
 
 #!/bin/bash
 
-author_avatar_dir="./tmp/images/"
-cached_data_file="./tmp/history.cache"
+author_avatar_dir="./out/images/"
+cached_data_file="./out/history.cache"
 
 # maximum commits to show in the history
 commit_limit="5"
@@ -18,7 +18,7 @@ commit_limit="5"
 ignore_SHAs=""
 
 jq_bin_download="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux32"
-jq_bin_path="./tmp/bin/jq-linux32"
+jq_bin_path="./out/bin/jq-linux32"
 
 # List of Gitmojis that will be removed in the commit message (seperate with space)
 #   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json | jq -r .gitmojis[].code

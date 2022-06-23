@@ -20,18 +20,18 @@
 
 %
 \ifwindows
-    \immediate\write18{call ./scripts/history.bat /timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits" > ./tmp/historytl.tmp}
-    \immediate\write18{call ./scripts/history.bat /table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits" > ./tmp/historytab.tmp}
+    \immediate\write18{call ./scripts/history.bat /timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits" > ./out/historytl.tmp}
+    \immediate\write18{call ./scripts/history.bat /table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits" > ./out/historytab.tmp}
 \else\iflinux
-    \immediate\write18{/bin/bash -c './scripts/history.sh --timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits"' > ./tmp/historytl.tmp}
-    \immediate\write18{/bin/bash -c './scripts/history.sh --table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits"' > ./tmp/historytab.tmp}
+    \immediate\write18{/bin/bash -c './scripts/history.sh --timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits"' > ./out/historytl.tmp}
+    \immediate\write18{/bin/bash -c './scripts/history.sh --table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits"' > ./out/historytab.tmp}
 \else
-    \immediate\write18{echo History-Timeline: Your platform is not supported yet. > ./tmp/historytl.tmp}
-    \immediate\write18{echo History-Table: Your platform is not supported yet. > ./tmp/historytab.tmp}
+    \immediate\write18{echo History-Timeline: Your platform is not supported yet. > ./out/historytl.tmp}
+    \immediate\write18{echo History-Table: Your platform is not supported yet. > ./out/historytab.tmp}
 \fi\fi
 
-\newcommand\IncludeHistoryTimeline{\input{./tmp/historytl.tmp}}     %
-\newcommand\IncludeHistoryTable{\input{./tmp/historytab.tmp}}       %
+\newcommand\IncludeHistoryTimeline{\input{./out/historytl.tmp}}     %
+\newcommand\IncludeHistoryTable{\input{./out/historytab.tmp}}       %
 
 \newlength\inlineheight                                             %
 \newlength\inlinedepth                                              %
@@ -50,7 +50,7 @@
         \vspace{7pt}                                                % | add vertical space to top of content
         \raggedright                                                % | align text left
         \IfNoValueTF{#3}{#2}{\href{#3}{\underline{#2}}}             % |
-        \IfNoValueTF{#6}{by}{by \inlineimg{./tmp/images/#6}}        % |
+        \IfNoValueTF{#6}{by}{by \inlineimg{./out/images/#6}}        % |
         \IfNoValueTF{#5}{#4}{\href{#5}{\underline{\smash{#4}}}}     % |
         \vspace*{3pt}\newline                                       % |
         \detokenize{#7}                                             % |

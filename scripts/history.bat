@@ -8,8 +8,8 @@
 
 @echo off
 
-set "author_avatar_dir=.\tmp\images\"
-set "cached_data_file=.\tmp\history.cache"
+set "author_avatar_dir=.\out\images\"
+set "cached_data_file=.\out\history.cache"
 
 :: maximum commits to show in the history
 set "commit_limit=5"
@@ -18,10 +18,10 @@ set "commit_limit=5"
 set "ignore_SHAs="
 
 set "jq_bin_download=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win32.exe"
-set "jq_bin_path=.\tmp\bin\jq-win32.exe"
+set "jq_bin_path=.\out\bin\jq-win32.exe"
 
 :: List of Gitmojis that will be removed in the commit message seperate with space)
-::   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json | .\tmp\bin\jq-win32.exe -r .gitmojis[].code
+::   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json | .\out\bin\jq-win32.exe -r .gitmojis[].code
 set "gitmojis=:art: :zap: :fire: :bug: :ambulance: :sparkles: :memo: :rocket: :lipstick: :tada: :white_check_mark: :lock: :closed_lock_with_key: :bookmark: :rotating_light: :construction: :green_heart: :arrow_down: :arrow_up: :pushpin: :construction_worker: :chart_with_upwards_trend: :recycle: :heavy_plus_sign: :heavy_minus_sign: :wrench: :hammer: :globe_with_meridians: :pencil2: :poop: :rewind: :twisted_rightwards_arrows: :package: :alien: :truck: :page_facing_up: :boom: :bento: :wheelchair: :bulb: :beers: :speech_balloon: :card_file_box: :loud_sound: :mute: :busts_in_silhouette: :children_crossing: :building_construction: :iphone: :clown_face: :egg: :see_no_evil: :camera_flash: :alembic: :mag: :label: :seedling: :triangular_flag_on_post: :goal_net: :dizzy: :wastebasket: :passport_control: :adhesive_bandage: :monocle_face: :coffin: :test_tube: :necktie: :stethoscope: :bricks: :technologist:"
 
 set "title="
