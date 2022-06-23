@@ -47,7 +47,7 @@ function jq_binary() {
         
         # download the jq-tool to parse json
         if [ ! -e $jq_bin_path ]; then
-            if [ ! -e "$(dirname $jq_bin_path)" ]; then mkdir "$(dirname $jq_bin_path)"; fi
+            if [ ! -e "$(dirname $jq_bin_path)" ]; then mkdir -p "$(dirname $jq_bin_path)"; fi
             curl -Ls "$jq_bin_download" -o $jq_bin_path
             chmod +x $jq_bin_path
         fi
@@ -101,7 +101,7 @@ function start()
                 use_cached_data=false
 
                 # read cache file line by line
-                cache_commit_data=$(cat "$cached_data_file" | grep -F $commit_sha)
+                if [ -e "$cached_data_file" ]; then cache_commit_data=$(cat "$cached_data_file" | grep -F $commit_sha); fi
                 if [ $cache_commit_data ]; then
                     commit_author="$(echo $cache_commit_data | cut -d ',' -f 3)"
                     github_sha_url="$(echo $cache_commit_data | cut -d ',' -f 2)"
@@ -125,7 +125,7 @@ function start()
                             if [ "$github_author" != "" ]; then commit_author="$github_author"; fi
                             if [ "$github_author_avatar_url" != "" ]; then
                                 # download author avatar
-                                if [ ! -e "$author_avatar_dir" ]; then mkdir "$author_avatar_dir"; fi
+                                if [ ! -e "$author_avatar_dir" ]; then mkdir -p "$author_avatar_dir"; fi
                                 if [ ! -e "$author_avatar_dir$commit_author.png" ] && [ "$github_author_avatar_url" != "" ]; then
                                     parm_size="size=50"
                                     if [ "${github_author_avatar_url/'?'/''}" == "$github_author_avatar_url" ]; then
@@ -138,7 +138,7 @@ function start()
                                 fi
 
                                 # cache parsed data
-                                if [ ! -e "$(dirname $cached_data_file)" ]; then mkdir "$(dirname $cached_data_file)"; fi
+                                if [ ! -e "$(dirname $cached_data_file)" ]; then mkdir -p "$(dirname $cached_data_file)"; fi
                                 echo "$commit_sha,$github_sha_url,$commit_author,$github_author_url" >> "$cached_data_file"
                             fi
                         fi
