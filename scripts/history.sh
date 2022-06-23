@@ -17,6 +17,9 @@ commit_limit="5"
 # commits ignored in the generated history (seperate with space)
 ignore_SHAs=""
 
+jq_bin_download="https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux32"
+jq_bin_path="./tmp/bin/jq-linux32"
+
 # List of Gitmojis that will be removed in the commit message (seperate with space)
 #   curl -s https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json | jq -r .gitmojis[].code
 gitmojis=":art: :zap: :fire: :bug: :ambulance: :sparkles: :memo: :rocket: :lipstick: :tada: :white_check_mark: :lock: :closed_lock_with_key: :bookmark: :rotating_light: :construction: :green_heart: :arrow_down: :arrow_up: :pushpin: :construction_worker: :chart_with_upwards_trend: :recycle: :heavy_plus_sign: :heavy_minus_sign: :wrench: :hammer: :globe_with_meridians: :pencil2: :poop: :rewind: :twisted_rightwards_arrows: :package: :alien: :truck: :page_facing_up: :boom: :bento: :wheelchair: :bulb: :beers: :speech_balloon: :card_file_box: :loud_sound: :mute: :busts_in_silhouette: :children_crossing: :building_construction: :iphone: :clown_face: :egg: :see_no_evil: :camera_flash: :alembic: :mag: :label: :seedling: :triangular_flag_on_post: :goal_net: :dizzy: :wastebasket: :passport_control: :adhesive_bandage: :monocle_face: :coffin: :test_tube: :necktie: :stethoscope: :bricks: :technologist:"
@@ -35,6 +38,24 @@ function show_usage()
     echo "in your document."
     echo "The 'history.sty'-file is required."
     exit
+}
+
+function jq_binary() {
+    arch=$(uname -i)
+
+    if [[ $arch == x86_64* ]] || [[ $arch == i*86 ]]; then
+        
+        # download the jq-tool to parse json
+        if [ ! -e $jq_bin_path ]; then
+            if [ ! -e "$(dirname $jq_bin_path)" ]; then mkdir "$(dirname $jq_bin_path)"; fi
+            curl -Ls "$jq_bin_download" -o $jq_bin_path
+            chmod +x $jq_bin_path
+        fi
+
+        return 0
+    fi
+
+    return 1
 }
 
 function start()
@@ -88,12 +109,12 @@ function start()
                     use_cached_data=true
                 fi
 
-                # retrieve additional data from github if repo is hosted on github and github.com is reachable
+                # retrieve additional data from github if repo is hosted on github, the jq parse tool is available and github.com is reachable
                 if [ "$github_api" != "" ] && [ "$use_cached_data" != "true" ]; then
-                    if jq --version &> /dev/null; then
+                    if jq --version &> /dev/null || jq_binary; then
                         if [ "${CI}" ] || timeout 1 ping github.com -c 1 &> /dev/null; then
                             # fetch & parse data from GitHub and separate to write variables
-                            github_data="$(curl -s $github_api/commits/$commit_sha | jq -r .html_url,.author.login,.author.html_url,.author.avatar_url)"
+                            github_data=`curl -s $github_api/commits/$commit_sha | $(jq_binary && echo $jq_bin_path || echo jq) -r .html_url,.author.login,.author.html_url,.author.avatar_url`
 
                             github_sha_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 1)"
                             github_author="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 2)"
