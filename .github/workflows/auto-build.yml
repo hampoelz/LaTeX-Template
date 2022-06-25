@@ -24,7 +24,7 @@ jobs:
         fetch-depth: 0
     - name: Build document
       run: |
-        latexmk -g -pdf --interaction=nonstopmode
+        latexmk -g --interaction=nonstopmode
         cp out/main.pdf out/${{ github.event.repository.name }}.pdf
     - name: Release artifacts
       uses: pyTooling/Actions/releaser@r0

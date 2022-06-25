@@ -6,38 +6,45 @@
 % https://github.com/hampoelz/LaTeX-Template.
 %
 
+% ========================================
+%              Do not change!             
+%                                         
+%     You can change configurations and   
+%      packages in the sections below     
+% ========================================
+
 \typeout{Rene Hampölz, 2022}
+
+\usepackage{luaotfload}                 % Font loader
+\usepackage[EU2]{fontenc}               % Font encoding
+\usepackage[extendedchars]{grffile}     % non-ascii characters in paths
+\usepackage{lmodern}                    % text & mathematics fonts / additional characters
+
+\newcommand\auxDir{./out}               % auxiliary directory (must be identical to the definition in the .latexmkrc file)
 
 % ========================================
 %              Configurations             
 % ========================================
 
+\usepackage[english]{babel}             % english language
+% \usepackage[german]{babel}              % german language
+
 % title of the generated history timeline
-\newcommand\HistoryTimelineTitle{Commit History}
+\protected\def\HistoryTimelineTitle{Commit History}
 
 % maximum commits to show in the history timeline
-\newcommand\HistoryTimelineLimit{5}
+\def\HistoryTimelineLimit{5}
 
 % title of the generated history table
-\newcommand\HistoryTableTitle{Full Commit History}
+\protected\def\HistoryTableTitle{Full Commit History}
 
 % maximum commits to show in the history table use '0' for no limit
-\newcommand\HistoryTableLimit{0}
+\def\HistoryTableLimit{0}
 
 % commits ignored in generated history (seperate with space)
 % example config:
-%   \newcommand\HistoryIgnoreCommits{32d0a55 b64004a d431f06}
-\newcommand\HistoryIgnoreCommits{}
-
-% ========================================
-%              Do not change!             
-% ========================================
-
-\usepackage[utf8]{inputenc}             % UTF8 encode
-\usepackage[T1]{fontenc}                % accented characters
-\usepackage{lmodern}                    % text & mathematics fonts / additional characters
-
-\newcommand\auxDir{./out}               % auxiliary directory (must be identical to the definition in the .latexmkrc file)
+%   \def\HistoryIgnoreCommits{32d0a55 b64004a d431f06}
+\def\HistoryIgnoreCommits{}
 
 % ========================================
 %        Enable or disable packages       
@@ -46,8 +53,6 @@
 \usepackage{booktabs}                   % enhance table quality
 \usepackage{styles/history}             % auto-generate commit history 
 
-\usepackage[german]{babel}              % german language
-% \usepackage[english]{babel}             % english language
 \usepackage{amsmath}                    % mathematical symbols
 \usepackage{amssymb}                    % mathematical symbols
 \usepackage{amsfonts}                   % mathematical symbols
