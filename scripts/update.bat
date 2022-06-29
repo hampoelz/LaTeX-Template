@@ -31,11 +31,17 @@ set "ignore_SHAs=1371a4d"
 set "refresh_env_path=scripts\refreshenv.bat"
 set "refresh_env_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
 
+set "script_path=.git\~update.bat"
+set "script_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/update.bat"
+
 if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
 call:refresh_env
 call:check_git
 call:check_git_version
+
+call:pull_script "%script_path%" "%~1"
+
 call:init_empty
 
 if [%1] == [] goto:start else (
@@ -55,6 +61,15 @@ exit
     echo to the state of the template repository at:
     echo %remote%
     echo Changes are cherry-picked and merged
+    exit
+
+:pull_script
+    set "script_path=%~f1"
+    if [%~f0] == [%script_path%] goto:EOF
+    if not exist "%script_path%" (
+        call curl -sL "%script_url%" -o "%script_path%"
+    )
+    cmd /k "%script_path%" %~2
     exit
 
 :refresh_env

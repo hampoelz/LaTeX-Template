@@ -31,6 +31,9 @@ ignore_SHAs="1371a4d"
 refresh_env_path="scripts/refreshenv.bat"
 refresh_env_url="https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
 
+script_path=".git/~update.sh"
+script_url="https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/update.sh"
+
 if [ -e "$currbr_file" ]; then branch=$(head -n 1 "$currbr_file"); fi
 
 function show_usage()
@@ -42,6 +45,19 @@ function show_usage()
     echo "to the state of the template repository at:"
     echo "$remote"
     echo "Changes are cherry-picked and merged"
+    exit
+}
+
+function pull_script()
+{
+    function realpath() { echo $(cd $(dirname "$1"); pwd)/$(basename "$1"); }
+    
+    script_path="$(realpath $1)"
+    if [ "$(realpath $0)" == "$script_path" ]; then return 0; fi
+    if [ ! -e "$script_path" ]; then
+        curl -sL "$script_url" -o "$script_path"
+    fi
+    bash "$script_path" $2
     exit
 }
 
@@ -245,6 +261,7 @@ function start()
 
 check_git
 check_git_version
+pull_script "$script_path" "$1"
 init_empty
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
