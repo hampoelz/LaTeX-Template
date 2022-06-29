@@ -65,8 +65,8 @@
             "id": "abort",
             "type": "pickString",
             "description": "Select a task execution option:",
-            "options":[ "Run or Continue", "Abort" ],
-            "default": "Run or Continue",
+            "options":[ "run or continue", "abort" ],
+            "default": "run or continue",
         },
     ]
 }
