@@ -28,9 +28,6 @@ currbr_file=".git/currbr"
 ignore_SHAs="1371a4d"
 
 
-refresh_env_path="scripts/refreshenv.bat"
-refresh_env_url="https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
-
 script_path=".git/~update.sh"
 script_url="https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/update.sh"
 
@@ -249,6 +246,8 @@ function start_update()
 
 function start()
 {
+    init_empty
+    
     # if update branch not exists, start update else continue cherry-pick and merge
     check_branch start_update
 
@@ -260,9 +259,9 @@ function start()
 }
 
 check_git
-check_git_version
 pull_script "$script_path" "$1"
-init_empty
+
+check_git_version
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     show_usage

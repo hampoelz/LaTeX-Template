@@ -36,13 +36,12 @@ set "script_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/s
 
 if exist "%currbr_file%" set /p branch=< "%currbr_file%"
 
-call:refresh_env
 call:check_git
-call:check_git_version
-
 call:pull_script "%script_path%" "%~1"
 
-call:init_empty
+call:refresh_env
+call:check_git_version
+
 
 if [%1] == [] goto:start else (
     if [%1] == [/?]     call:show_usage
@@ -146,9 +145,9 @@ exit
     )
     goto:EOF
 
-:: check if update-branch exists and go ahead else goto parameter
+:: check if update-branch exists and go ahead else execute parameter
 :check_branch
-    call git rev-parse --verify %update_branch% >nul 2>&1 || goto %~1
+    call git rev-parse --verify %update_branch% >nul 2>&1 || %~1 %~2
     goto:EOF
 
 :init_empty
@@ -156,15 +155,17 @@ exit
     goto:EOF
 
 :abort
-    call:check_branch :eof
+    call:check_branch exit 0
     echo --- abort cherry-pick ----
     call git cherry-pick --abort
     call:cleanup
     exit
 
 :start
+    call:init_empty
+
     :: if update branch not exists, start update else continue cherry-pick and merge
-    call:check_branch :start_update
+    call:check_branch goto:start_update
 
     :: skip empty picks and continue with cherry-pick 
     set "pick_sequencer=continue"
