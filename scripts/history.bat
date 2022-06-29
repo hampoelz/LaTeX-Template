@@ -58,20 +58,9 @@ exit
 :start
     setlocal enabledelayedexpansion
 
-    if not [%2] == [] if not [%2] == [" "] (
-        set "title=[%2]"
-        set title=!title:"=!
-    )
-
-    if not [%3] == [] if not [%3] == [" "] (
-        set "commit_limit=%3"
-        set commit_limit=!commit_limit:"=!
-    )
-
-    if not [%4] == [] if not [%4] == [" "] (
-        set "ignore_SHAs=%4"
-        set ignore_SHAs=!ignore_SHAs:"=!
-    )
+    if not "%~2" == "" set "title=[%~2]"
+    if not "%~3" == "" set "commit_limit=%~3"
+    if not "%~4" == "" set "ignore_SHAs=%~4"
 
     :: set no commit limit if parameter equal '0'
     if [%commit_limit%] == [0] set "commit_limit="
