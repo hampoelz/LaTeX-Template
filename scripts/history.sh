@@ -30,7 +30,7 @@ prefix_entry=""
 
 function show_usage()
 {
-    echo "usage: history.bat < --timeline | --table > [title] [commit limit] [ignore SHAs]"
+    echo "usage: history.sh < --timeline | --table > [title] [commit limit] [ignore SHAs]"
     echo
     echo
     echo "This script prints LaTeX code to"

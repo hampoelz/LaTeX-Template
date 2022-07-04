@@ -12,7 +12,7 @@ hooks="applypatch-msg pre-applypatch post-applypatch pre-commit prepare-commit-m
 
 function show_usage()
 {
-    echo "usage: hookmgr.bat <add | del> <githook> <shell command>"
+    echo "usage: hookmgr.sh <add | del> <githook> <shell command>"
     echo
     echo
     echo "Desc"
@@ -26,7 +26,7 @@ function start()
     command=$3
 
     if ! echo $hooks | grep "$hook_name" &> /dev/null; then
-        echo "hookmgr.bat: Specified hook does not exist"
+        echo "hookmgr.sh: Specified hook does not exist"
         exit
     fi
 
@@ -42,11 +42,11 @@ function start()
 
     if [ "$action" == "add" ]; then
         if cat "$hook_path" | grep -F "$hook_command" >/dev/null; then
-            echo "hookmgr.bat: Your command already exists in the $hook_name hook"
+            echo "hookmgr.sh: Your command already exists in the $hook_name hook"
         else
             echo "$hook_command" >> "$hook_path"
             echo "" >> "$hook_path"
-            echo "hookmgr.bat: Your command has been added to the $hook_name hook"
+            echo "hookmgr.sh: Your command has been added to the $hook_name hook"
         fi
     fi
 
@@ -55,10 +55,10 @@ function start()
 
         if diff "$hook_path" "$hook_path.tmp" >/dev/null; then
             rm "$hook_path.tmp"
-            echo "hookmgr.bat: Your command has already been removed from the $hook_name hook"
+            echo "hookmgr.sh: Your command has already been removed from the $hook_name hook"
         else
             mv "$hook_path.tmp" "$hook_path"
-            echo "hookmgr.bat: Your command has been removed from the $hook_name hook"
+            echo "hookmgr.sh: Your command has been removed from the $hook_name hook"
         fi
     fi
 }

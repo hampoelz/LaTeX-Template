@@ -35,7 +35,7 @@ if [ -e "$currbr_file" ]; then branch=$(head -n 1 "$currbr_file"); fi
 
 function show_usage()
 {
-    echo "usage: update.bat (--abort)"
+    echo "usage: update.sh (--abort)"
     echo
     echo
     echo "This script updates the current repository"
