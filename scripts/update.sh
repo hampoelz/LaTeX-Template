@@ -28,6 +28,9 @@ currbr_file=".git/currbr"
 ignore_SHAs="1371a4d"
 
 
+hookmgr_path="scripts/hookmgr.sh"
+rebuild_path="scripts/hooks/rebuild.sh"
+
 script_path=".git/~update.sh"
 script_url="https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/update.sh"
 
@@ -180,6 +183,12 @@ function start_merge()
     echo "             Update was successfully merged             "
     echo "========================================================"
     echo
+
+    # add rebuild hooks
+    if [ -e "$hookmgr_path" ] && [ -e "$rebuild_path" ]; then
+        /bin/bash "$hookmgr_path" add pre-push "$rebuild_path --post_push" > /dev/null
+        /bin/bash "$hookmgr_path" add post-commit "$rebuild_path --post_commit" > /dev/null
+    fi
 
     cleanup
 }
