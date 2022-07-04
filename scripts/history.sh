@@ -30,7 +30,7 @@ prefix_entry=""
 
 function show_usage()
 {
-    echo "usage: history.sh < --timeline | --table > [title] [commit limit] [ignore SHAs]"
+    echo "usage: history.sh <timeline | table> [title] [commit limit] [ignore SHAs]"
     echo
     echo
     echo "This script prints LaTeX code to"
@@ -170,11 +170,11 @@ function start()
 
 if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     show_usage
-elif [ "$1" == "--timeline" ]; then
+elif [ "$1" == "timeline" ]; then
     prefix="HistoryTimeline"
     prefix_entry="HistoryTlEntry"
     start "$2" "$3" "$4"
-elif [ "$1" == "--table" ]; then
+elif [ "$1" == "table" ]; then
     prefix="HistoryTable"
     prefix_entry="HistoryTabEntry"
     start "$2" "$3" "$4"

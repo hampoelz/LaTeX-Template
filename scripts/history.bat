@@ -31,12 +31,12 @@ set "prefix_entry="
 if [%1] == [] goto:show_usage else (
     if [%1] == [/?]     call:show_usage
     if [%1] == [/help]  call:show_usage
-    if [%1] == [/timeline] (
+    if [%1] == [timeline] (
         set "prefix=HistoryTimeline"
         set "prefix_entry=HistoryTlEntry"
         goto:start
     )
-    if [%1] == [/table] (
+    if [%1] == [table] (
         set "prefix=HistoryTable"
         set "prefix_entry=HistoryTabEntry"
         goto:start
@@ -46,7 +46,7 @@ if [%1] == [] goto:show_usage else (
 exit
 
 :show_usage
-    echo.|set /p ="usage: history.bat </timeline | /table> [title] [commit limit] [ignore SHAs]"
+    echo.|set /p ="usage: history.bat <timeline | table> [title] [commit limit] [ignore SHAs]"
     echo.
     echo.
     echo This script prints LaTeX code to

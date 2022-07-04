@@ -21,11 +21,11 @@
 
 %
 \ifwindows
-    \immediate\write18{call ./scripts/history.bat /timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits" > ./out/historytl.tmp}
-    \immediate\write18{call ./scripts/history.bat /table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits" > ./out/historytab.tmp}
+    \immediate\write18{call ./scripts/history.bat timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits" > ./out/historytl.tmp}
+    \immediate\write18{call ./scripts/history.bat table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits" > ./out/historytab.tmp}
 \else\iflinux
-    \immediate\write18{/bin/bash -c './scripts/history.sh --timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits"' > ./out/historytl.tmp}
-    \immediate\write18{/bin/bash -c './scripts/history.sh --table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits"' > ./out/historytab.tmp}
+    \immediate\write18{/bin/bash -c './scripts/history.sh timeline "\HistoryTimelineTitle" "\HistoryTimelineLimit" "\HistoryIgnoreCommits"' > ./out/historytl.tmp}
+    \immediate\write18{/bin/bash -c './scripts/history.sh table "\HistoryTableTitle" "\HistoryTableLimit" "\HistoryIgnoreCommits"' > ./out/historytab.tmp}
 \else
     \immediate\write18{echo History-Timeline: Your platform is not supported yet. > ./out/historytl.tmp}
     \immediate\write18{echo History-Table: Your platform is not supported yet. > ./out/historytab.tmp}
