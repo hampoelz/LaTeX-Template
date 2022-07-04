@@ -23,7 +23,9 @@ exit
     echo.|set /p ="usage: hookmgr.bat <add | del> <githook> <shell command>"
     echo.
     echo.
-    echo Desc
+    echo This script adds or removes a command to/from
+    echo a specified git hook. Used to automatically
+    echo handle hooks in a project.
     exit
 
 :start
