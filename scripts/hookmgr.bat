@@ -29,17 +29,15 @@ exit
 :start
     setlocal enabledelayedexpansion
 
-    set action=%1
-    set hook_name=%2
-    set command=%3
+    set action=%~1
+    set hook_name=%~2
+    set command=%~3
 
     echo %hooks% | findstr "%hook_name%" >nul 2>&1 || (
         echo hookmgr.bat: Specified hook does not exist
         exit
     )
-
-    if [%command:~0,1%%command:~-1%] == [""] set command=!command:~1,-1!
-
+    
     set "hook_path=.\.git\hooks\%hook_name%"
     set "hook_command=nohup /bin/sh '%command%' >/dev/null 2>&1 &"
 
