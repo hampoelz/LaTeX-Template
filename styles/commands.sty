@@ -1,0 +1,66 @@
+%
+% Copyright (c) 2022 Rene Hampölz
+%
+% Use of this source code is governed by an MIT-style
+% license that can be found in the LICENSE file under
+% https://github.com/hampoelz/LaTeX-Template.
+%
+
+% ============================================
+%  Enable or disable packages and/or commands 
+% ============================================
+
+% ----- no additional packages required ------
+
+% usage: \maketitletoc
+%
+% \newcommand{\maketitletoc}{             % ┝ make title, include toc and center vertically with a slight offset
+%     \null                               % |
+%     \nointerlineskip                    % | no skip for prev line
+%     \vfill                              % |
+%     \let\snewpage \newpage              % |
+%     \let\newpage \relax                 % |
+%     \maketitle                          % |
+%     \vspace{2em}                        % | add some spce between title and toc
+%     \tableofcontents                    % |
+%     \vspace{0.2\textheight}             % | add offset
+%     \let \newpage \snewpage             % |
+%     \vfill                              % |
+%     \break                              % | page break
+% }                                       % |
+
+% ---------- using xcolor package ------------
+\usepackage{xcolor}            % enable colour management
+
+% usage: \hl{Text}
+%
+\newcommand{\hl}[1]{\colorbox[HTML]{FBF719}{#1}}
+
+% --------- using tcolorbox package ----------
+% \usepackage[most]{tcolorbox}            % coloured and framed text boxes with a heading line
+
+% usage:
+%   \begin{restofpage}
+%     ...
+%   \end{restofpage}
+%
+% \newtcolorbox{restofpage}[1][]{         % ┝ create a new box with its height set to the rest of the available vertical space of the current page
+%  enhanced,                              % |
+%  frame hidden,                          % |
+%  colback=white,                         % |
+%  height fill,                           % |
+%  space to=\restSpace,                   % |
+%  #1                                     % |
+% }                                       % |
+
+% usage: \graybox{Text}
+%
+% \newcommand{\graybox}[1]{%              % ┝ create a simple gray box with text for a few notes, for usage
+%     \begin{tcolorbox}[%                 % |
+%         enhanced,%                      % |
+%         frame hidden,%                  % |
+%         width=\textwidth%               % |
+%     ]                                   % |
+%     #1                                  % |
+%     \end{tcolorbox}%                    % |
+% }                                       % |
