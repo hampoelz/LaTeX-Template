@@ -26,6 +26,11 @@ jobs:
       run: |
         latexmk -g --interaction=nonstopmode
         cp out/main.pdf out/${{ github.event.repository.name }}.pdf
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Document
+        path: out/${{ github.event.repository.name }}.pdf
     - name: Check release tag
       id: check_tag
       if: github.event_name != 'pull_request'
