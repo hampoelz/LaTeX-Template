@@ -53,6 +53,18 @@
 %
 \newcommand{\hl}[1]{\colorbox[HTML]{FBF719}{#1}}
 
+% ----------- using array package ------------
+\usepackage{array}            % enable colour management
+
+% usage
+%   \begin{tabular}{ L{width} C{width} R{width} }
+%     ...
+%   \end{tabular}
+%
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}   % left aligned column with custom width
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}     % center aligned column with custom width
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}    % right aligned column with custom width
+
 % --------- using tcolorbox package ----------
 % \usepackage[most]{tcolorbox}            % coloured and framed text boxes with a heading line
 
