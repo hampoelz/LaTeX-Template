@@ -65,6 +65,29 @@
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}     % center aligned column with custom width
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}    % right aligned column with custom width
 
+% ----------- using enumitem package ------------
+\usepackage{enumitem}            % enable colour management
+\usepackage{calc}                % perform arithmetic on the arguments of latex commands
+
+% usage:
+%   \begin{titled}{Title}
+%     ...
+%   \end{titled}
+%
+\newenvironment{titled}[1]{                 % ┝ indent the content by the length of the title
+    \begin{description}[%                   % |
+            leftmargin=%                    % | example:
+                \widthof{\textnormal{#1}},% % |   \begin{titled}{lorem ipsum: }
+            labelwidth=0pt,%                % |     Lorem ipsum\\
+            labelsep=0pt%                   % |     Lorem ipsum\\
+        ]                                   % |     ...
+        \item[\textnormal{#1}]              % |   \end{titled}
+        \begin{sloppypar}                   % |
+}{                                          % | output of example:
+        \end{sloppypar}                     % |   lorem ipsum: Lorem ipsum
+    \end{description}                       % |                Lorem ipsum
+}                                           % |                ...
+
 % --------- using tcolorbox package ----------
 % \usepackage[most]{tcolorbox}            % coloured and framed text boxes with a heading line
 
