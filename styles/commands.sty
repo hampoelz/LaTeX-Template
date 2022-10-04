@@ -12,7 +12,7 @@
 
 % ----- no additional packages required ------
 
-% usage: \tsize<size>{Text}
+% usage: \tsize<size>{<Text>}
 % sizes: tiny, script, footnote, small, normal, large, Large, LARGE, huge, Huge
 % example:
 %   \tsizetiny{lorem ipsum}
@@ -46,7 +46,7 @@
 % ----------- using xcolor package -----------
 \usepackage{xcolor}                         % enable colour management
 
-% usage: \hl{Text}
+% usage: \hl{<Text>}
 %
 \newcommand{\hl}[1]{\colorbox[HTML]{FBF719}{#1}}
 
@@ -54,7 +54,7 @@
 \usepackage{array}                          % extend options for column formats
 
 % usage
-%   \begin{tabular}{ L{width} C{width} R{width} }
+%   \begin{tabular}{ L{<width>} C{<width>} R{<width>} }
 %     ...
 %   \end{tabular}
 %
@@ -66,7 +66,7 @@
 \usepackage{enumitem}                       % control layout of list environments
 
 % usage:
-%   \begin{titled}{Title}
+%   \begin{titled}{<Title>}
 %     ...
 %   \end{titled}
 %
@@ -89,7 +89,7 @@
 % \usepackage[most]{tcolorbox}              % coloured and framed text boxes with a heading line
 
 % usage:
-%   \begin{restofpage}[options]
+%   \begin{restofpage}[<options>]
 %     ...
 %   \end{restofpage}
 %
@@ -102,7 +102,7 @@
 %  #1                                       % |   \end{restofpage}
 % }                                         % |
 
-% usage: \graybox{Text}
+% usage: \graybox{<Text>}
 %
 % \newcommand{\graybox}[1]{%                % ┝ create a simple gray box with text for a few notes
 %     \begin{tcolorbox}[%                   % |
