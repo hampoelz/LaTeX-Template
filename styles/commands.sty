@@ -73,20 +73,20 @@
 %     ...
 %   \end{titled}
 %
-\usepackage{calc}                           % perform arithmetic on the arguments of latex commands
-\newenvironment{titled}[1]{                 % ┝ indent the content by the length of the title
-    \begin{description}[%                   % |
-            leftmargin=%                    % | example:
-                \widthof{\textnormal{#1}},% % |   \begin{titled}{lorem ipsum: }
-            labelwidth=0pt,%                % |     Lorem ipsum\\
-            labelsep=0pt%                   % |     Lorem ipsum\\
-        ]                                   % |     ...
-        \item[\textnormal{#1}]              % |   \end{titled}
-        \begin{sloppypar}                   % |
-}{                                          % | output of example:
-        \end{sloppypar}                     % |   lorem ipsum: Lorem ipsum
-    \end{description}                       % |                Lorem ipsum
-}                                           % |                ...
+% \usepackage{calc}                           % perform arithmetic on the arguments of latex commands
+% \newenvironment{titled}[1]{                 % ┝ indent the content by the length of the title
+%     \begin{description}[%                   % |
+%             leftmargin=%                    % | example:
+%                 \widthof{\textnormal{#1}},% % |   \begin{titled}{lorem ipsum: }
+%             labelwidth=0pt,%                % |     Lorem ipsum\\
+%             labelsep=0pt%                   % |     Lorem ipsum\\
+%         ]                                   % |     ...
+%         \item[\textnormal{#1}]              % |   \end{titled}
+%         \begin{sloppypar}                   % |
+% }{                                          % | output of example:
+%         \end{sloppypar}                     % |   lorem ipsum: Lorem ipsum
+%     \end{description}                       % |                Lorem ipsum
+% }                                           % |                ...
 
 % --------- using tcolorbox package ----------
 % \usepackage[most]{tcolorbox}              % coloured and framed text boxes with a heading line
