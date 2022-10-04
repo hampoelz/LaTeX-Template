@@ -92,17 +92,17 @@
 % \usepackage[most]{tcolorbox}              % coloured and framed text boxes with a heading line
 
 % usage:
-%   \begin{restofpage}
+%   \begin{restofpage}[options]
 %     ...
 %   \end{restofpage}
 %
-% \newtcolorbox{restofpage}[1][]{           % ┝ create a new box with its height set to the rest of the available vertical space of the current page
-%  enhanced,                                % |
+% \newtcolorbox{restofpage}[1][]{           % ┝ create a new box environment with the '\restspace' command in it with the
+%  enhanced,                                % |  height set to the rest of the current page's available vertical space
 %  frame hidden,                            % |
-%  colback=white,                           % |
-%  height fill,                             % |
-%  space to=\restSpace,                     % |
-%  #1                                       % |
+%  colback=white,                           % | example:
+%  height fill,                             % |   \begin{restofpage}[frame style, boxrule=0.5pt]
+%  space to=\restspace,                     % |     \includegraphics[height=\restspace]{images/lorem_picsum.jpg}
+%  #1                                       % |   \end{restofpage}
 % }                                         % |
 
 % usage: \graybox{Text}
