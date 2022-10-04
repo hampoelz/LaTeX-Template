@@ -91,6 +91,20 @@
 % --------- using tcolorbox package ----------
 % \usepackage[most]{tcolorbox}              % coloured and framed text boxes with a heading line
 
+% usage:
+%   \begin{restofpage}
+%     ...
+%   \end{restofpage}
+%
+% \newtcolorbox{restofpage}[1][]{           % ┝ create a new box with its height set to the rest of the available vertical space of the current page
+%  enhanced,                                % |
+%  frame hidden,                            % |
+%  colback=white,                           % |
+%  height fill,                             % |
+%  space to=\restSpace,                     % |
+%  #1                                       % |
+% }                                         % |
+
 % usage: \graybox{Text}
 %
 % \newcommand{\graybox}[1]{%                % ┝ create a simple gray box with text for a few notes
