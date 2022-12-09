@@ -24,7 +24,7 @@ jobs:
         fetch-depth: 0
     - name: Build document
       run: |
-        latexmk -g --interaction=nonstopmode
+        latexmk -g -f --interaction=nonstopmode
         cp out/main.pdf out/${{ github.event.repository.name }}.pdf
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
