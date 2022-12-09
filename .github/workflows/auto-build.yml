@@ -14,17 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     container: texlive/texlive:latest
     steps:
-    - name: Install jq
-      run: |
-        apt-get update -y
-        apt-get install -y jq
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Build document
       run: |
-        latexmk -g --interaction=nonstopmode
+        latexmk -g -f --interaction=nonstopmode
         cp out/main.pdf out/${{ github.event.repository.name }}.pdf
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
