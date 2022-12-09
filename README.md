@@ -1,12 +1,12 @@
 # LaTeX Template
 
-➡ Pre-configured LaTeX document
+➡ **Pre-configured LaTeX document** _- optimized for [VS Code](https://code.visualstudio.com/) editor and [Git](https://git-scm.com/)/[Github](https://github.com/) version control_
 
-> ℹ️ LaTeX is a awesome software packet - but unfortunately it takes time and is complicated for beginners to set up a new environment. This project tries to solve this.
+> ℹ️ This project provides configurations and scripts to increase the productivity of power users and to make it easier for newcomers to get started with LaTeX.
 
 > ❗ Important Notice
->
-> All necessary information and tutorials can be found in the wiki:
+> 
+> All necessary information and tutorials can be found in the wiki:  
 > [https://github.com/hampoelz/LaTeX-Template/wiki](https://github.com/hampoelz/LaTeX-Template/wiki) 
 
 ---
