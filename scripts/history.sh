@@ -150,7 +150,7 @@ function start()
 
                 if [ "$commit_date" != "" ]; then commit_date="{$commit_date}"; fi
                 if [ "$commit_sha" != "" ]; then commit_sha="{$commit_sha}"; fi
-                if [ "$commit_msg" != "" ]; then commit_msg="{\directlua{tex.sprint(-2, \"\luaescapestring{$commit_msg}\")}}"; fi
+                if [ "$commit_msg" != "" ]; then commit_msg="{\directlua{tex.sprint(-2, \"\luaescapestring{\unexpanded{$commit_msg}}\")}}"; fi
                 if [ "$commit_author" != "" ]; then commit_author="{$commit_author}"; fi
 
                 if [ "$github_sha_url" != "" ]; then github_sha_url="[$github_sha_url]"; fi
