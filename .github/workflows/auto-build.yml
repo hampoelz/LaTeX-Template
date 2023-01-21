@@ -25,6 +25,8 @@ jobs:
       run: |
         latexmk -g -f --interaction=nonstopmode
         cp out/main.pdf out/${{ github.event.repository.name }}.pdf
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
