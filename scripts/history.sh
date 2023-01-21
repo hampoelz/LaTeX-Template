@@ -77,6 +77,10 @@ function start()
     github_api="${github_api/'.git'/''}"
     github_api="${github_api/'//github.com/'/'//api.github.com/repos/'}"
 
+    if [[ ! -z "$GITHUB_TOKEN" ]]; then
+        github_api_token="-H 'authorization: Bearer $GITHUB_TOKEN'"
+    fi
+
     # loop through commits and get date and sha
     commit_counter=0
     while read commit_data; do
@@ -114,8 +118,7 @@ function start()
                     if jq --version &> /dev/null || jq_binary; then
                         if [ "${CI}" ] || timeout 1 ping github.com -c 1 &> /dev/null; then
                             # fetch & parse data from GitHub and separate to write variables
-                            github_data=`curl -s $github_api/commits/$commit_sha | $(jq_binary && echo $jq_bin_path || echo jq) -r .html_url,.author.login,.author.html_url,.author.avatar_url`
-
+                            github_data=`eval curl -s $github_api_token $github_api/commits/$commit_sha | $(jq_binary && echo $jq_bin_path || echo jq) -r .html_url,.author.login,.author.html_url,.author.avatar_url`
                             github_sha_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 1)"
                             github_author="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 2)"
                             github_author_url="$(echo $github_data | grep -v 'null' | cut -d ' ' -f 3)"
