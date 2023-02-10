@@ -204,7 +204,7 @@ exit
         echo ========================================================
         echo.
 
-        call .\initexmf.exe --set-config-value=[MPM]AutoInstall=yes
+        call .\initexmf.exe -u --set-config-value=[MPM]AutoInstall=yes
         call .\miktex.exe packages check-update
         call .\miktex.exe packages update
         call .\miktex.exe packages install latexmk
