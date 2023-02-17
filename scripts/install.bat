@@ -333,6 +333,7 @@ exit
     cd "%cwd_template%"
     call git init
     call cmd /k "%cwd_setup%\%setup_template%"
+    call latexmk -g --interaction=nonstopmode
     cd "%cwd_setup%"
     goto:EOF
 
