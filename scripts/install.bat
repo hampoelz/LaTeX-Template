@@ -49,7 +49,8 @@ echo       latex-workshop, latex-utilities,
 echo       code-spell-checker, gitlens
 echo.
 echo     The following miktex configurations will be made:
-echo       enable auto package install, install latexmk
+echo       enable auto package install, install latexmk,
+echo       install lacheck
 echo.
 echo.
 echo           - Copyright (c) 2022 Rene Hampoelz -         
@@ -208,6 +209,7 @@ exit
         call .\miktex.exe packages check-update
         call .\miktex.exe packages update
         call .\miktex.exe packages install latexmk
+        call .\miktex.exe packages install lacheck
     )
     endlocal
     cd "%cwd_setup%"
