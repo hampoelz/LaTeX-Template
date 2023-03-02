@@ -242,7 +242,8 @@ exit
     echo.
     cd "%cwd_perl%"
     call .\relocation.pl.bat
-    call .\update_env.pl.bat --nosystem
+    ::call .\update_env.pl.bat --nosystem
+    call:add_env "%cwd_perl%\perl\bin\"
     cd "%cwd_setup%"
     goto:EOF
 
