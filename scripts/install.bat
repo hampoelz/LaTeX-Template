@@ -65,6 +65,7 @@ if not "%~n0" == "install" set "cwd_template=%cd%\%~n0"
 
 if not exist "%cwd_setup%" mkdir "%cwd_setup%"
 
+call:check_space
 call:check_miktex
 
 if not "%1" == "/installonly" if not exist "%cwd_vscode%\code" call:install_vscode
@@ -104,6 +105,25 @@ if not "%~n0" == "install" (
 
 exit
 
+
+:check_space
+    for /f "usebackq delims== tokens=2" %%x in (`wmic logicaldisk where "DeviceID='%cwd_setup:~0,2%:'" get FreeSpace /format:value`) do set /a "space_temp=%%x/1024/1024"
+    for /f "usebackq delims== tokens=2" %%x in (`wmic logicaldisk where "DeviceID='%LocalAppData:~0,2%:'" get FreeSpace /format:value`) do set /a "space_data=%%x/1024/1024"
+
+    if "%space_temp%" GEQ "205" if "%space_data%" GEQ "5120" (
+        cls
+        echo.
+        echo ========================================================
+        echo                    Not enough space!
+        echo ========================================================
+        echo.
+        echo You need at least 5 gigabytes of free space to
+        echo install the required software on your device.
+        echo.
+        pause
+        exit
+    )
+    goto:EOF
 
 :check_miktex
     call miktex --help >nul 2>&1 && (
