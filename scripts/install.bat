@@ -107,10 +107,9 @@ exit
 
 
 :check_space
-    for /f "usebackq delims== tokens=2" %%x in (`wmic logicaldisk where "DeviceID='%cwd_setup:~0,2%:'" get FreeSpace /format:value`) do set /a "space_temp=%%x/1024/1024"
-    for /f "usebackq delims== tokens=2" %%x in (`wmic logicaldisk where "DeviceID='%LocalAppData:~0,2%:'" get FreeSpace /format:value`) do set /a "space_data=%%x/1024/1024"
+    for /f "usebackq delims== tokens=2" %%x in (`wmic logicaldisk where "DeviceID='%LocalAppData:~0,2%'" get FreeSpace /format:value`) do set /a "space_data=%%x"
 
-    if "%space_temp%" GEQ "205" if "%space_data%" GEQ "5120" (
+    if "%space_data%" GEQ "5368709120" (
         cls
         echo.
         echo ========================================================
