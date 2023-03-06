@@ -15,7 +15,7 @@ set "cwd_setup=%temp%\LatexSetup"
 set "cwd_template=%cd%\LatexTemplate"
 
 set "cwd_vscode=%LocalAppData%\Programs\Microsoft VS Code\bin"
-set "texdir=%LocalAppData%\Programs\TeXLive"
+set "cwd_texlive=%LocalAppData%\Programs\TeXLive"
 set "cwd_git=%LocalAppData%\Programs\Git"
 
 set "refresh_env_url=https://raw.githubusercontent.com/hampoelz/LaTeX-Template/main/scripts/refreshenv.bat"
@@ -65,30 +65,16 @@ if not "%~n0" == "install" set "cwd_template=%cd%\%~n0"
 
 if not exist "%cwd_setup%" mkdir "%cwd_setup%"
 
-call:check_space
 call:check_miktex
-
-if not "%1" == "/installonly" if not exist "%cwd_vscode%\code" call:install_vscode
+call:setup_vscode
+call:setup_git
+call:setup_texlive
 call:configure_vscode
-
-call latexmk --help >nul 2>&1 || call:install_texlive
-
-set "git_path=%cwd_git%\bin;%cwd_git%\usr\bin;%cwd_git%\mingw64\bin"
-call git --help >nul 2>&1 && (
-    for /f "usebackq tokens=3 delims= " %%i in (`"git --version"`) do if "%%i" LSS "2.22.0" (
-        call:install_git
-    )
-) || call:install_git
-
-call git config user.name >nul && git config user.email >nul || call:configure_git
-
-:: Brodcast WM_SETTINGCHANGE to propagate the change to the environment variable list
-::   Credits to https://github.com/ObjectivityLtd/PSCI/blob/master/PSCI/Public/utils/Update-EnvironmentVariables.ps1
-powershell -command "&{Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition '[DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);' ; [win32.nativemethods]::SendMessageTimeout([intptr]0xffff, 0x1a, [uintptr]::Zero, \"Environment\", 2, 5000, [ref][uintptr]::zero)}" >nul
+call:configure_git
 
 if not "%1" == "/installonly" (
     call:setup_template
-    start /min cmd /c call code "%cwd_template%"
+    start /min cmd /c call %cmd_vscode% "%cwd_template%"
     cd "%cwd_template%"
 )
 
@@ -105,67 +91,104 @@ if not "%~n0" == "install" (
 
 exit
 
-
-:check_space
-    for /f "usebackq delims== tokens=2" %%x in (`wmic logicaldisk where "DeviceID='%LocalAppData:~0,2%'" get FreeSpace /format:value`) do set /a "space_data=%%x"
-
-    if "%space_data%" GEQ "5368709120" (
-        cls
-        echo.
-        echo ========================================================
-        echo                    Not enough space!
-        echo ========================================================
-        echo.
-        echo You need at least 5 gigabytes of free space to
-        echo install the required software on your device.
-        echo.
-        pause
-        exit
-    )
-    goto:EOF
-
 :check_miktex
-    call miktex --help >nul 2>&1 && (
-        cls
-        echo.
-        echo ========================================================
-        echo            Please uninstall MikTeX to proceed
-        echo ========================================================
-        echo.
-        echo The script will open a window listing all your installed
-        echo programs - look for MikTeX and uninstall it to proceed.
-        echo.
-        pause
-        call appwiz.cpl
-        echo.
-        echo After MikTeX has been uninstalled press any key to continue.
-        echo.
-        pause
-        call:refresh_env
-        goto:check_miktex
-    )
+    call miktex --help >nul 2>&1 || goto:EOF
+    
+    cls
+    echo.
+    echo ========================================================
+    echo            Please uninstall MikTeX to proceed
+    echo ========================================================
+    echo.
+    echo It is not recommended to use MikTeX as TeX distribution!
+    echo.
+    echo If you are forced to use MikTeX you have to install the
+    echo required software manually. More information can be found
+    echo in the wiki.
+    echo.
+    echo The script will open a window listing all your installed
+    echo software - search for MikTeX and uninstall it to proceed.
+    echo.
+    pause
+
+    call appwiz.cpl
+    echo.
+    echo After MikTeX has been uninstalled press any key to continue.
+    echo.
+    pause
+
+    call:refresh_env
+    goto:check_miktex
     goto:EOF
 
-:install_vscode
+:setup_vscode
+    if "%1" == "/installonly" goto:EOF
+    if exist "%cwd_vscode%\code" goto:EOF
+
     echo.
     echo ========================================================
     echo     Download and install Microsoft Visual Studio Code
     echo ========================================================
     echo.
     cd "%cwd_setup%"
-    call curl -L "%setup_vscode_url%" -o %setup_vscode%
-    call .\%setup_vscode% /VERYSILENT /CURRENTUSER /NORESTART /MERGETASKS="addtopath,!runcode" /LOG="%cwd_setup%\%setup_vscode%.log"
-    call:refresh_env
-    goto:EOF
+    call curl -L "%setup_vscode_url%" -o %setup_vscode% && (
+        call .\%setup_vscode% /VERYSILENT /CURRENTUSER /NORESTART /MERGETASKS="addtopath,!runcode" /LOG="%cwd_setup%\%setup_vscode%.log" && (
+            call:refresh_env
+            
+            echo -------- cleanup ---------
+            del %setup_vscode%
+            echo --------------------------
+
+            goto:EOF
+        )
+    )
+
+    echo -------- cleanup ---------
+    if exist "%setup_vscode%" del %setup_vscode%
+    echo --------------------------
+
+    echo.
+    echo --------------------------------------------
+    echo  Error:
+    echo.
+    echo  The installation of Visual Studio Code
+    echo  failed! Try to install it manually using
+    echo  the 'User Installer' available on the
+    echo  official website and run this script
+    echo  again.
+    echo.
+    echo  see: https://code.visualstudio.com/
+    echo -------------------------------------------- 
+    echo.
+    pause
+    exit
 
 
 :configure_vscode
-    cd "%cwd_setup%"
+    call code --help >nul 2>&1 && (
+        set "cmd_vscode=code"
+    ) || if exist "%cwd_vscode%\code" (
+        cd "%cwd_vscode%"
+        set "cmd_vscode=.\code"
+    ) else (
+        echo.
+        echo --------------------------------------------
+        echo  Error:
+        echo.
+        echo  Visual Studio Code cannot be found for
+        echo  configuration, possibly your installation
+        echo  is corrupted. Try to uninstall Visual
+        echo  Studio Code and run this script again.
+        echo -------------------------------------------- 
+        echo.
+        pause
+        exit
+    )
 
     setlocal enabledelayedexpansion
 
     set "installed_exts="
-    for /f "usebackq delims=" %%i in (`"code --list-extensions"`) do (
+    for /f "usebackq delims=" %%i in (`"%cmd_vscode% --list-extensions"`) do (
         set "installed_exts=!installed_exts! %%i"
     )
 
@@ -176,33 +199,99 @@ exit
         echo ========================================================
         echo.
 
-        call code --install-extension James-Yu.latex-workshop
-        call code --install-extension tecosaur.latex-utilities
-        call code --install-extension eamodio.gitlens
-        call code --install-extension streetsidesoftware.code-spell-checker
+        call %cmd_vscode% --install-extension James-Yu.latex-workshop
+        call %cmd_vscode% --install-extension tecosaur.latex-utilities
+        call %cmd_vscode% --install-extension eamodio.gitlens
+        call %cmd_vscode% --install-extension streetsidesoftware.code-spell-checker
     )
+
     endlocal
+
+    cd "%cwd_setup%"
     goto:EOF
 
-:install_texlive
+:setup_texlive
+    call latexmk --help >nul 2>&1 && goto:EOF
+
+    call tlmgr --help >nul 2>&1 && (
+        echo.
+        echo ========================================================
+        echo                 Install TeX Live packages
+        echo ========================================================
+        echo.
+        tlmgr init-usertree
+        tlmgr install scheme-full
+        goto:EOF
+    )
+
     echo.
     echo ========================================================
     echo               Download TeX Live setup files
     echo ========================================================
     echo.
     cd "%cwd_setup%"
-    call curl -L "%setup_texlive_url%" -o %setup_texlive%
-    call tar -xvf "%cwd_setup%\%setup_texlive%"
+    call curl -L "%setup_texlive_url%" -o %setup_texlive% && (
+        call tar -xvf "%cwd_setup%\%setup_texlive%" && (
+            echo.
+            echo ========================================================
+            echo                     Install TeX Live
+            echo ========================================================
+            echo.
+
+            setlocal enabledelayedexpansion
+
+            :: Use the default installation path as a fallback if the home folder contains accents
+            for %%P in ("%UserProfile%") do set "UserFolder=%%~nP"
+            powershell "if ('!UserFolder!' -match '[^a-zA-Z0-9\s-_]'){exit 1}" && (
+                set "TEXLIVE_INSTALL_PREFIX=%cwd_texlive%"
+            ) || (
+                set "TEXLIVE_INSTALL_PREFIX=C:\TeXLive"
+            )
+
+            cd "install-tl-*\."
+            call .\install-tl-windows.bat -no-doc-install -no-src-install -non-admin -no-interaction -no-gui && (
+                call:refresh_env
+                cd "%cwd_setup%"
+
+                echo -------- cleanup ---------
+                del %setup_texlive%
+                for /d %%f in ("install-tl-*") do rmdir /s /q "%%f"
+                echo --------------------------
+
+                goto:EOF
+            )
+
+            endlocal
+        )
+    )
+
+    echo -------- cleanup ---------
+    if defined TEXLIVE_INSTALL_PREFIX rmdir /s /q "%TEXLIVE_INSTALL_PREFIX%"
+    if exist "%setup_texlive%" del %setup_texlive%
+    for /d %%f in ("install-tl-*") do rmdir /s /q "%%f"
+    echo --------------------------
 
     echo.
-    echo ========================================================
-    echo                     Install TeX Live
-    echo ========================================================
+    echo --------------------------------------------
+    echo  Error:
     echo.
-    cd "%cwd_setup%\install-tl-*\."
-    call .\install-tl-windows.bat -texdir "%texdir%"  -no-doc-install -no-src-install -non-admin -no-interaction -no-gui
-    call:refresh_env
-    cd "%cwd_setup%"
+    echo  The installation of TeX Live failed! Try
+    echo  to install it manually and run this script
+    echo  again. More informations are available on
+    echo  the official website.
+    echo.
+    echo  see: https://www.tug.org/texlive/
+    echo -------------------------------------------- 
+    echo.
+    pause
+    exit
+
+:setup_git
+    call git --help >nul 2>&1 && (
+        for /f "usebackq tokens=3 delims= " %%i in (`"git --version"`) do if "%%i" LSS "2.22.0" (
+            call:install_git
+        )
+    ) || call:install_git
     goto:EOF
 
 :install_git
@@ -212,12 +301,56 @@ exit
     echo ========================================================
     echo.
     cd "%cwd_setup%"
-    call curl -L "%setup_git_url%" -o %setup_git%
-    call .\%setup_git% -o"%cwd_git%" -y
-    call:add_env "%git_path%"
-    goto:EOF
+    call curl -L "%setup_git_url%" -o %setup_git% && (
+        call .\%setup_git% -o"%cwd_git%" -y && (
+            call:add_env "%cwd_git%\bin"
+
+            echo -------- cleanup ---------
+            del %setup_git%
+            echo --------------------------
+
+            goto:EOF
+        )
+    )
+
+    echo -------- cleanup ---------
+    if exist "%setup_git%" del %setup_git%
+    rmdir /s /q "%cwd_git%"
+    echo --------------------------
+
+    echo.
+    echo --------------------------------------------
+    echo  Error:
+    echo.
+    echo  The installation of Git failed! Try
+    echo  to install it manually and run this script
+    echo  again. More informations are available on
+    echo  the official website.
+    echo.
+    echo  see: https://gitforwindows.org/
+    echo -------------------------------------------- 
+    echo.
+    pause
+    exit
 
 :configure_git
+    call git --help >nul 2>&1 || (
+        echo.
+        echo --------------------------------------------
+        echo  Error:
+        echo.
+        echo  Git cannot be found for configuration,
+        echo  possibly your installation is corrupted.
+        echo -------------------------------------------- 
+        echo.
+        pause
+        exit
+    )
+    call git config user.name >nul && git config user.email >nul && goto:EOF
+    call:configure_git_details
+    goto:EOF
+
+:configure_git_details
     cls
     echo.
     echo ========================================================
@@ -243,7 +376,7 @@ exit
         echo --------------------------------------------
         echo.
         pause
-        goto:configure_git
+        goto:configure_git_details
     )
     if not defined name (
         echo --------------------------------------------
@@ -255,7 +388,7 @@ exit
         echo --------------------------------------------
         echo.
         pause
-        goto:configure_git
+        goto:configure_git_details
     )
 
     echo.
@@ -264,7 +397,7 @@ exit
     if %errorlevel% equ 2 (
         set mail=
         set name=
-        goto:configure_git
+        goto:configure_git_details
     )
 
     call git config --global user.email "%mail%"
@@ -286,8 +419,10 @@ exit
     echo ========================================================
     echo.
     if exist "%cwd_template%" (
+        echo.
         echo The specified directory already exists!
-        exit
+        echo.
+        goto:EOF
     )
     mkdir "%cwd_template%"
     cd "%cwd_template%"
@@ -299,9 +434,10 @@ exit
 
 :add_env
     set user_path=
-    for /f "usebackq skip=2 tokens=1-2*" %%a in (`"%WinDir%\System32\Reg query HKCU\Environment /v Path 2>&1"`) do set user_path=%%c
+    for /f "usebackq skip=2 tokens=1-2*" %%a in (`"%WinDir%\System32\Reg query HKCU\Environment /v Path 2>&1"`) do set "user_path=%%c"
     call "%WinDir%\System32\Reg" add "HKCU\Environment" /f /v Path /d "%~1;%user_path%"
     set "path=%~1;%path%"
+    call:brodcast_env
     goto:EOF
 
 :refresh_env
@@ -310,6 +446,13 @@ exit
     cd "%cwd_setup%"
     if not exist refreshenv.bat call curl -sL "%refresh_env_url%" -o refreshenv.bat
     call .\refreshenv.bat
+    call:brodcast_env
     echo ------------------------------
     echo.
+    goto:EOF
+
+:brodcast_env
+    :: Brodcast WM_SETTINGCHANGE to propagate the change to the environment variable list
+    ::   Credits to https://github.com/ObjectivityLtd/PSCI/blob/master/PSCI/Public/utils/Update-EnvironmentVariables.ps1
+    powershell -command "&{Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition '[DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);' ; [win32.nativemethods]::SendMessageTimeout([intptr]0xffff, 0x1a, [uintptr]::Zero, \"Environment\", 2, 5000, [ref][uintptr]::zero)}" >nul
     goto:EOF
