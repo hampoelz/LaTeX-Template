@@ -444,9 +444,9 @@ exit
     echo.
     echo ------------------------------
     cd "%cwd_setup%"
+    call:brodcast_env
     if not exist refreshenv.bat call curl -sL "%refresh_env_url%" -o refreshenv.bat
     call .\refreshenv.bat
-    call:brodcast_env
     echo ------------------------------
     echo.
     goto:EOF
