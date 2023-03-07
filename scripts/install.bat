@@ -330,6 +330,7 @@ exit
     exit
 
 :configure_git
+    call:refresh_env
     call git --help >nul 2>&1 || (
         echo.
         echo --------------------------------------------
@@ -410,6 +411,8 @@ exit
     echo.
     cd "%cwd_setup%"
     call curl -L %setup_template_url% -o %setup_template%
+
+    call:refresh_env
 
     echo.
     echo ========================================================
