@@ -347,6 +347,8 @@ exit
         exit
     )
     call git config user.name >nul && git config user.email >nul && goto:EOF
+    set "mail="
+    set "name="
     call:configure_git_details
     goto:EOF
 
