@@ -224,6 +224,14 @@ exit
         goto:EOF
     )
 
+    :: Use the default installation path as a fallback if the home folder contains accents
+    for %%P in ("%UserProfile%") do set "UserFolder=%%~nP"
+    powershell "if ('%UserFolder%' -match '[^a-zA-Z0-9\s-_]'){exit 1}" && (
+        set "TEXLIVE_INSTALL_PREFIX=%cwd_texlive%"
+    ) || (
+        set "TEXLIVE_INSTALL_PREFIX=C:\TeXLive"
+    )
+
     echo.
     echo ========================================================
     echo               Download TeX Live setup files
@@ -238,16 +246,6 @@ exit
             echo ========================================================
             echo.
 
-            setlocal enabledelayedexpansion
-
-            :: Use the default installation path as a fallback if the home folder contains accents
-            for %%P in ("%UserProfile%") do set "UserFolder=%%~nP"
-            powershell "if ('!UserFolder!' -match '[^a-zA-Z0-9\s-_]'){exit 1}" && (
-                set "TEXLIVE_INSTALL_PREFIX=%cwd_texlive%"
-            ) || (
-                set "TEXLIVE_INSTALL_PREFIX=C:\TeXLive"
-            )
-
             cd "install-tl-*\."
             call .\install-tl-windows.bat -no-doc-install -no-src-install -non-admin -no-interaction -no-gui && (
                 call:refresh_env
@@ -260,8 +258,6 @@ exit
 
                 goto:EOF
             )
-
-            endlocal
         )
     )
 
