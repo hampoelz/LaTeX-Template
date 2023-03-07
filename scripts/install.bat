@@ -359,7 +359,7 @@ exit
     echo.
 
     echo.
-    echo Please enter your details below
+    echo Please enter your email address and your full name / username below
     echo.
 
     if not defined mail ( set /p mail="Email: %mail%" ) else echo Email: %mail%
