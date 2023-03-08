@@ -110,9 +110,9 @@ exit
     echo required software manually. More information can be found
     echo in the wiki.
 
-    if %check_miktex_count% lss 3 (
-        set /a check_miktex_count+=1
+    if %check_miktex_count% lss 2 (
         call:soft_uninstall_miktex
+        set /a check_miktex_count+=1
     ) else (
         call:force_uninstall_miktex
     )
@@ -138,17 +138,21 @@ exit
 :force_uninstall_miktex
     echo.
     echo Apparently the uninstall did not work,
-    echo do you want to force remove miktex?
+    echo do you want to force remove MikTeX?
     echo.
 
     echo.
     choice /c YN /m "Force remove MikTeX?"
     echo.
-    if %errorlevel% equ 2 goto:EOF
+    if %errorlevel% equ 2 (
+        call:soft_uninstall_miktex
+        goto:EOF
+    )
 
     for /f "usebackq delims=" %%i in (`"where miktex"`) do (
-        rmdir /s /q "..\..\..\%%i
+        rmdir /s /q "%%~pi\..\..\..\"
     )
+    cd "%cwd_setup%"
     goto:EOF
 
 :setup_vscode
