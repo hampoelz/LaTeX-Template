@@ -92,8 +92,12 @@ if not "%~n0" == "install" (
 exit
 
 :check_miktex
+    set /a check_miktex_count=0
+    call:uninstall_miktex
+
+:uninstall_miktex
     call miktex --help >nul 2>&1 || goto:EOF
-    
+
     cls
     echo.
     echo ========================================================
@@ -105,6 +109,19 @@ exit
     echo If you are forced to use MikTeX you have to install the
     echo required software manually. More information can be found
     echo in the wiki.
+
+    if %check_miktex_count% lss 2 (
+        call:soft_uninstall_miktex
+        set /a check_miktex_count+=1
+    ) else (
+        call:force_uninstall_miktex
+    )
+
+    call:refresh_env
+    goto:uninstall_miktex
+    goto:EOF
+
+:soft_uninstall_miktex
     echo.
     echo The script will open a window listing all your installed
     echo software - search for MikTeX and uninstall it to proceed.
@@ -116,9 +133,26 @@ exit
     echo After MikTeX has been uninstalled press any key to continue.
     echo.
     pause
+    goto:EOF
 
-    call:refresh_env
-    goto:check_miktex
+:force_uninstall_miktex
+    echo.
+    echo Apparently the uninstall did not work,
+    echo do you want to force remove MikTeX?
+    echo.
+
+    echo.
+    choice /c YN /m "Force remove MikTeX?"
+    echo.
+    if %errorlevel% equ 2 (
+        call:soft_uninstall_miktex
+        goto:EOF
+    )
+
+    for /f "usebackq delims=" %%i in (`"where miktex"`) do (
+        rmdir /s /q "%%~pi\..\..\..\"
+    )
+    cd "%cwd_setup%"
     goto:EOF
 
 :setup_vscode
