@@ -30,6 +30,26 @@
 \newcommand{\unnumberedParagraph}[1]{\addcontentsline{toc}{paragraph}{#1}\paragraph*{#1}}
 \newcommand{\unnumberedSubparagraph}[1]{\addcontentsline{toc}{subparagraph}{#1}\subparagraph*{#1}}
 
+% ---------- section title page ----------
+\newcommand{\bigsection}[2][]{
+    \def\hrulefill{\leavevmode\leaders\hrule height 0.5ex depth \dimexpr -0.5ex+0.4pt \hfill\kern 0pt}
+    \clearpage\null
+    \par\refstepcounter{section}
+    \addcontentsline{toc}{section}{\protect\numberline{\thesection}#2}
+    \if\relax\detokenize{#1}\relax\else\label{#1}\fi
+    \null\vfill\vspace{-2em}
+    \begin{center}%
+        \Huge%
+        \textbf{\thesection}%
+        \\\vspace{0.5ex}%
+        \hrulefill\\%
+        \textbf{#2}%
+        \\\hrulefill%
+    \end{center}
+    \vfill\break
+    \clearpage
+}
+
 % --------- center title and toc ---------
 % \newcommand{\maketitletoc}{               % ┝ make title, include toc and center vertically with a slight offset
 %     \null\nointerlineskip\vfill           % |
