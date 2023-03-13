@@ -23,12 +23,12 @@
 \newcommand{\tsizeHuge}[1]{{\Huge #1}}
 
 % --------- unnumbered sections ----------
-\newcommand{\unnumberedPart}[1]{\addcontentsline{toc}{part}{#1}\part*{#1}}
-\newcommand{\unnumberedSection}[1]{\addcontentsline{toc}{section}{#1}\section*{#1}}
-\newcommand{\unnumberedSubsection}[1]{\addcontentsline{toc}{subsection}{#1}\subsection*{#1}}
-\newcommand{\unnumberedSubsubsection}[1]{\addcontentsline{toc}{subsubsection}{#1}\subsubsection*{#1}}
-\newcommand{\unnumberedParagraph}[1]{\addcontentsline{toc}{paragraph}{#1}\paragraph*{#1}}
-\newcommand{\unnumberedSubparagraph}[1]{\addcontentsline{toc}{subparagraph}{#1}\subparagraph*{#1}}
+\newcommand{\unnumberedPart}[1]{\part*{#1}\addcontentsline{toc}{part}{#1}}
+\newcommand{\unnumberedSection}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
+\newcommand{\unnumberedSubsection}[1]{\subsection*{#1}\addcontentsline{toc}{subsection}{#1}}
+\newcommand{\unnumberedSubsubsection}[1]{\subsubsection*{#1}\addcontentsline{toc}{subsubsection}{#1}}
+\newcommand{\unnumberedParagraph}[1]{\paragraph*{#1}\addcontentsline{toc}{paragraph}{#1}}
+\newcommand{\unnumberedSubparagraph}[1]{\subparagraph*{#1}\addcontentsline{toc}{subparagraph}{#1}}
 
 % ---------- section title page ----------
 \newcommand{\bigsection}[2][]{
