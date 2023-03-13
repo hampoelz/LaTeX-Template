@@ -150,7 +150,7 @@ exit
     )
 
     for /f "usebackq delims=" %%i in (`"where miktex"`) do (
-        rmdir /s /q "%%~pi\..\..\..\"
+        rmdir /s /q "%%~fi\..\..\..\"
     )
     cd "%cwd_setup%"
     goto:EOF
