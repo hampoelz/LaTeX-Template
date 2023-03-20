@@ -30,9 +30,13 @@ jobs:
       run: git switch auto-update 2>/dev/null || git switch -c auto-update
     - name: Update document
       run: curl -s https://raw.githubusercontent.com/$PARENT_REPO/$PARENT_BRANCH/scripts/update.sh -o ../update.sh && bash ../update.sh && rm ../update.sh
+    - name: Check changes
+      run: echo "UPDATE_AVAILABLE=$(git diff --exit-code --quiet HEAD origin/main && echo false || echo true) >> $GITHUB_ENV"
     - name: Push changes
+      if: ${{ env.UPDATE_AVAILABLE == 'true' }}
       run: git push --set-upstream origin auto-update
     - name: Create pull request
+      if: ${{ env.UPDATE_AVAILABLE == 'true' }}
       run: "gh pr create -B main --title 'chore: :twisted_rightwards_arrows: Merge changes from template' --fill"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
