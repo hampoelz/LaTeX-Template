@@ -44,6 +44,7 @@ jobs:
       run: git push --set-upstream origin auto-update
     - name: Create pull request
       if: ${{ env.UPDATE_AVAILABLE == 'true' }}
-      run: "gh pr reopen auto-update || gh pr create --base main --title 'chore: :twisted_rightwards_arrows: Merge changes from template' --body 'Merged from $TEMPLATE_URL'"
+      run: |
+        gh pr reopen auto-update || gh pr create --base main --title "chore: :twisted_rightwards_arrows: Merge changes from template" --body "Merged from $TEMPLATE_URL"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
