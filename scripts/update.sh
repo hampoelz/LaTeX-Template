@@ -66,7 +66,7 @@ function pull_script()
 
 function check_internet()
 {
-    timeout 1 ping github.com -c 1 &> /dev/null || {
+    if [ ! "${CI}" ] && timeout 1 ping github.com -c 1 &> /dev/null || {
         echo
         echo "========================================================"
         echo "              Unable to connect to github!              "
