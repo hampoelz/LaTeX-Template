@@ -1,0 +1,38 @@
+name: Automated Update
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    name: Update
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.parent_template.outputs.git_url }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Parse template url
+      run: echo "TEMPLATE_URL=$(git log -1 --grep='Merged from https://github.com/' | sed -n -e 's/\s*Merged from //p')" >> $GITHUB_ENV
+    - name: Parse template infos
+      run: |
+        echo "PARENT_REPO=$(echo $TEMPLATE_URL | grep -o -P '(?<=https:\/\/github\.com\/).*(?=\/tree\/)')" >> $GITHUB_ENV
+        echo "PARENT_BRANCH=$(echo $TEMPLATE_URL | grep -o -P '(?<=\/tree\/).*')" >> $GITHUB_ENV
+    - name: Create update branch
+      run: git switch auto-update 2>/dev/null || git switch -c auto-update
+    - name: Update document
+      run: curl -s https://raw.githubusercontent.com/$PARENT_REPO/$PARENT_BRANCH/scripts/update.sh -o ../update.sh && bash ../update.sh && rm ../update.sh
+    - name: Push changes
+      run: git push --set-upstream origin auto-update
+    - name: Create pull request
+      run: "gh pr create -B main --title 'chore: :twisted_rightwards_arrows: Merge changes from template' --fill"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
