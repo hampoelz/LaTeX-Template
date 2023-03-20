@@ -34,7 +34,7 @@ jobs:
         git config user.email github-actions@github.com
         curl -s https://raw.githubusercontent.com/$PARENT_REPO/$PARENT_BRANCH/scripts/update.sh -o ../update.sh && bash ../update.sh && rm ../update.sh
     - name: Check changes
-      run: echo "UPDATE_AVAILABLE=$(git diff --exit-code --quiet HEAD origin/main && echo false || echo true) >> $GITHUB_ENV"
+      run: echo "UPDATE_AVAILABLE=$(git diff --exit-code --quiet HEAD origin/main && echo false || echo true)" >> $GITHUB_ENV
     - name: Push changes
       if: ${{ env.UPDATE_AVAILABLE == 'true' }}
       run: git push --set-upstream origin auto-update
