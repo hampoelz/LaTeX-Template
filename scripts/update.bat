@@ -6,6 +6,10 @@
 :: https://github.com/hampoelz/LaTeX-Template.
 ::
 
+:: usage:
+::   https://github.com/hampoelz/LaTeX-Template/wiki/02-Usage#preconfigured-scriptstasks
+::   https://github.com/hampoelz/LaTeX-Template/wiki/02-Usage#update
+
 @echo off
 
 :: minimum required git version: v2.22.0

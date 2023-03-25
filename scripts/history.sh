@@ -6,6 +6,8 @@
 # https://github.com/hampoelz/LaTeX-Template.
 #
 
+# usage: https://github.com/hampoelz/LaTeX-Template/wiki/02-Usage#git-history
+
 #!/bin/bash
 
 author_avatar_dir="./out/images/"
