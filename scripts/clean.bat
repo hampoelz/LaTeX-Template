@@ -6,6 +6,8 @@
 :: https://github.com/hampoelz/LaTeX-Template.
 ::
 
+:: usage: https://github.com/hampoelz/LaTeX-Template/wiki/02-Usage#preconfigured-scriptstasks
+
 @echo off
 git clean -Xdf
 
