@@ -53,6 +53,11 @@ jobs:
       with:
         token: ${{ secrets.UPDATE_TOKEN == '' && secrets.GITHUB_TOKEN || secrets.UPDATE_TOKEN }}
         fetch-depth: 0
+    - name: Get current branch
+      id: get_branch
+      run:
+        branch_current=$(git branch --show-current)
+        echo "BRANCH_CURRENT=$branch_current" >> $GITHUB_OUTPUT
     - name: Create update branch
       run: git switch $BRANCH_UPDATE 2>/dev/null || git switch -c $BRANCH_UPDATE
     - name: Setup git identity
@@ -67,7 +72,7 @@ jobs:
     - name: Check changes
       id: check_changes
       run: |
-        has_changes=$(git diff --exit-code --quiet HEAD origin/$BRANCH_UPDATE &> /dev/null && echo false || echo true)
+        has_changes=$(git diff --exit-code --quiet HEAD origin/${{ steps.get_branch.outputs.BRANCH_CURRENT }} &> /dev/null && echo false || (git diff --exit-code --quiet HEAD origin/$BRANCH_UPDATE &> /dev/null && echo false || echo true))
         echo "UPDATE_AVAILABLE=$has_changes" >> $GITHUB_OUTPUT
     - name: Push changes
       if: steps.check_changes.outputs.UPDATE_AVAILABLE == 'true'
@@ -78,4 +83,4 @@ jobs:
       run: |
         gh pr reopen $BRANCH_UPDATE || gh pr create --base main --title "chore: :twisted_rightwards_arrows: Merge changes from template" --body "Merged from https://github.com/${{ needs.get_parent.outputs.repo }}/tree/${{ needs.get_parent.outputs.branch }}"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.UPDATE_TOKEN == '' && secrets.GITHUB_TOKEN || secrets.UPDATE_TOKEN }}
